@@ -1481,7 +1481,13 @@ static Bool SavageEnterVT(int scrnIndex, int flags)
     gpScrn = pScrn;
     SavageEnableMMIO(pScrn);
     SavageSave(pScrn);
-    return SavageModeInit(pScrn, pScrn->currentMode);
+    if(SavageModeInit(pScrn, pScrn->currentMode)) {
+	/* some BIOSes seem to enable HW cursor on PM resume */
+	if (!SAVPTR(pScrn)->hwc_on)
+	    SavageHideCursor( pScrn ); 
+	return TRUE;
+    }
+    return FALSE;
 }
 
 
