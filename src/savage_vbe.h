@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_vbe.h,v 1.3 2002/05/14 20:19:52 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_vbe.h,v 1.1 2000/12/02 01:16:15 dawes Exp $ */
 
 /*
 This file was originally part of the Linux Real-Mode Interface, or LRMI.
