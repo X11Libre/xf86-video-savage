@@ -107,7 +107,7 @@ you would rather have the
 driver use your mode line timing exactly, turn off the UseBios option.  
 Default: on (use the BIOS).
 .TP
-.BI "Option \*qShadowStatus\*q \q*" boolean \*q
+.BI "Option \*qShadowStatus\*q \*q" boolean \*q
 Enables the use of a shadow status register.  There is a chip bug in the 
 Savage graphics engine that can cause a bus lock when reading the engine
 status register under heavy load, such as when scrolling text or dragging

@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_accel.c,v 1.22 2003/11/03 05:11:29 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_accel.c,v 1.23 2003/12/22 17:48:10 tsi Exp $ */
 
 /*
  *
@@ -66,6 +66,7 @@ static void SavageSubsequentSolidBresenhamLine(
     int length,
     int octant);
 
+#if 0
 static void SavageSubsequentSolidTwoPointLine(
     ScrnInfoPtr pScrn,
     int x1,
@@ -73,6 +74,7 @@ static void SavageSubsequentSolidTwoPointLine(
     int x2,
     int y2,
     int bias);
+#endif
 
 #if 0
 static void SavageSetupForScreenToScreenColorExpand(
@@ -128,6 +130,7 @@ static void SavageSubsequentMono8x8PatternFillRect(
     int w,
     int h);
 
+#if 0
 static void SavageSetupForColor8x8PatternFill(
     ScrnInfoPtr pScrn,
     int patternx,
@@ -144,6 +147,7 @@ static void SavageSubsequentColor8x8PatternFillRect(
     int y,
     int w,
     int h);
+#endif
 
 static void SavageSetClippingRectangle(
     ScrnInfoPtr pScrn,
@@ -484,7 +488,6 @@ SavageInitAccel(ScreenPtr pScreen)
     xaaptr->SolidLineFlags = NO_PLANEMASK | ROP_NEEDS_SOURCE;
     xaaptr->SetupForSolidLine = SavageSetupForSolidFill;
     xaaptr->SubsequentSolidBresenhamLine = SavageSubsequentSolidBresenhamLine;
-    xaaptr->SubsequentSolidTwoPointLine = SavageSubsequentSolidTwoPointLine;
 #if 0
     xaaptr->SubsequentSolidFillTrap = SavageSubsequentSolidFillTrap; 
 #endif
@@ -989,6 +992,7 @@ SavageSubsequentMono8x8PatternFillRect(
 }
 
 
+#if 0
 static void 
 SavageSetupForColor8x8PatternFill(
     ScrnInfoPtr pScrn,
@@ -1049,6 +1053,7 @@ SavageSubsequentColor8x8PatternFillRect(
     BCI_SEND(BCI_X_Y(x, y));
     BCI_SEND(BCI_W_H(w, h));
 }
+#endif
 
 
 static void
@@ -1088,6 +1093,7 @@ SavageSubsequentSolidBresenhamLine(
 }
 
 
+#if 0
 static void 
 SavageSubsequentSolidTwoPointLine(
     ScrnInfoPtr pScrn,
@@ -1147,6 +1153,7 @@ SavageSubsequentSolidTwoPointLine(
     BCI_SEND( BCI_LINE_STEPS( 2 * (min - max), 2 * min ) );
     BCI_SEND( BCI_LINE_MISC( max, ym, xp, yp, 2 * min - max ) );
 }
+#endif
 
 
 
