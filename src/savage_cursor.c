@@ -81,7 +81,7 @@ SavageHWCursorInit(ScreenPtr pScreen)
 		     HARDWARE_CURSOR_AND_SOURCE_WITH_MASK |
 		     HARDWARE_CURSOR_BIT_ORDER_MSBFIRST |
 	             HARDWARE_CURSOR_INVERT_MASK;
-
+#if 0
     /*
      * The /MX family is apparently unique among the Savages, in that
      * the cursor color is always straight RGB.  The rest of the Savages
@@ -94,7 +94,10 @@ SavageHWCursorInit(ScreenPtr pScreen)
 	||
 	S3_SAVAGE_MOBILE_SERIES(psav->Chipset)
       )
-         infoPtr->Flags |= HARDWARE_CURSOR_TRUECOLOR_AT_8BPP; 
+	infoPtr->Flags |= HARDWARE_CURSOR_TRUECOLOR_AT_8BPP; 
+#endif
+    /* With streams engine the Cursor seems to be ALWAYS TrueColor */
+    infoPtr->Flags |= HARDWARE_CURSOR_TRUECOLOR_AT_8BPP; 
 
     infoPtr->SetCursorColors = SavageSetCursorColors;
     infoPtr->SetCursorPosition = SavageSetCursorPosition;
@@ -144,8 +147,8 @@ SavageLoadCursorImage(
     SavagePtr psav = SAVPTR(pScrn);
 
     /* Set cursor location in frame buffer.  */
-    outCRReg( 0x4d, (0xff & psav->CursorKByte));
-    outCRReg( 0x4c, (0xff00 & psav->CursorKByte) >> 8);
+    outCRReg( 0x4d, (0xff & (CARD32)psav->CursorKByte));
+    outCRReg( 0x4c, (0xff00 & (CARD32)psav->CursorKByte) >> 8);
 
     /* Upload the cursor image to the frame buffer. */
     memcpy(psav->FBBase + psav->CursorKByte * 1024, src, 1024);
@@ -225,11 +228,14 @@ SavageSetCursorColors(
     bNeedExtra =
         (psav->CursorInfoRec->Flags & HARDWARE_CURSOR_TRUECOLOR_AT_8BPP);
 
-    if(
-        S3_SAVAGE_MOBILE_SERIES(psav->Chipset) ||
-	(pScrn->depth == 24) ||
-	((pScrn->depth == 8) && bNeedExtra)
-    )
+    /* With the streams engine on HW Cursor seems to be 24bpp ALWAYS */
+    if( 1 
+#if 0
+	|| S3_SAVAGE_MOBILE_SERIES(psav->Chipset) ||
+ 	(pScrn->depth == 24) ||
+ 	((pScrn->depth == 8) && bNeedExtra)
+#endif
+	) 
     {
 	/* Do it straight, full 24 bit color. */
       
@@ -247,6 +253,7 @@ SavageSetCursorColors(
 	outCRReg(0x4b, bg >> 16);
 	return;
     }
+#if 0
     else if( (pScrn->depth == 15) || (pScrn->depth == 16) )
     {
 	if (pScrn->depth == 15) {
@@ -296,4 +303,5 @@ SavageSetCursorColors(
 	outCRReg(0x4b, bg);
 	outCRReg(0x4b, bg);
     }
+#endif
 }

@@ -23,6 +23,7 @@
 #include "savage_driver.h"
 #include "savage_regs.h"
 #include "savage_bci.h"
+#include "savage_streams.h"
 
 /* Forward declaration of functions used in the driver */
 
@@ -47,7 +48,7 @@ static void SavageSetupForSolidFill(
     ScrnInfoPtr pScrn,
     int color, 
     int rop,
-    unsigned planemask);
+    unsigned int planemask);
 
 static void SavageSubsequentSolidFillRect(
     ScrnInfoPtr pScrn,
@@ -82,7 +83,7 @@ static void SavageSetupForScreenToScreenColorExpand(
     int bg,
     int fg,
     int rop,
-    unsigned planemask);
+    unsigned int planemask);
 
 static void SavageSubsequentScreenToScreenColorExpand(
     ScrnInfoPtr pScrn,
@@ -98,7 +99,7 @@ static void SavageSetupForCPUToScreenColorExpandFill(
     int fg,
     int bg,
     int rop,
-    unsigned planemask);
+    unsigned int planemask);
 
 static void SavageSubsequentScanlineCPUToScreenColorExpandFill(
     ScrnInfoPtr pScrn,
@@ -119,7 +120,7 @@ static void SavageSetupForMono8x8PatternFill(
     int fg, 
     int bg,
     int rop,
-    unsigned planemask);
+    unsigned int planemask);
 
 static void SavageSubsequentMono8x8PatternFillRect(
     ScrnInfoPtr pScrn,
@@ -421,7 +422,10 @@ SavageInitAccel(ScreenPtr pScreen)
 #if 1
     xaaptr->SetupForScreenToScreenCopy = SavageSetupForScreenToScreenCopy;
     xaaptr->SubsequentScreenToScreenCopy = SavageSubsequentScreenToScreenCopy;
-    xaaptr->ScreenToScreenCopyFlags = NO_TRANSPARENCY | NO_PLANEMASK | ROP_NEEDS_SOURCE;
+    xaaptr->ScreenToScreenCopyFlags = 0
+	| NO_TRANSPARENCY
+	| NO_PLANEMASK
+	| ROP_NEEDS_SOURCE;
 #endif
 
 
@@ -492,7 +496,7 @@ SavageInitAccel(ScreenPtr pScreen)
     xaaptr->SubsequentSolidFillTrap = SavageSubsequentSolidFillTrap; 
 #endif
 
-    xaaptr->SolidBresenhamLineErrorTermBits = 14;
+    xaaptr->SolidBresenhamLineErrorTermBits = 13;
 #endif
 
     /* ImageWrite */
@@ -594,7 +598,7 @@ SavageAccelSync(ScrnInfoPtr pScrn)
  */
 
 static int
-SavageHelpPatternROP(ScrnInfoPtr pScrn, int *fg, int *bg, int pm, int *rop)
+SavageHelpPatternROP(ScrnInfoPtr pScrn, int *fg, int *bg, unsigned int pm, int *rop)
 {
     XAAInfoRecPtr infoRec = GET_XAAINFORECPTR_FROM_SCRNINFOPTR(pScrn);
     int ret = 0;
@@ -604,7 +608,7 @@ SavageHelpPatternROP(ScrnInfoPtr pScrn, int *fg, int *bg, int pm, int *rop)
     if(pm == infoRec->FullPlanemask) {
 	if(!NO_SRC_ROP(*rop)) 
 	   ret |= ROP_PAT;
-	*rop = XAACopyROP[*rop];
+	*rop = XAAGetCopyROP(*rop);
     } else {	
 	switch(*rop) {
 	case GXnoop:
@@ -621,7 +625,7 @@ SavageHelpPatternROP(ScrnInfoPtr pScrn, int *fg, int *bg, int pm, int *rop)
 	    ret |= ROP_PAT | ROP_SRC;
 	    break;
 	}
-	*rop = XAACopyROP_PM[*rop];
+	*rop = XAAGetCopyROP_PM(*rop);
     }
 
     return ret;
@@ -629,7 +633,7 @@ SavageHelpPatternROP(ScrnInfoPtr pScrn, int *fg, int *bg, int pm, int *rop)
 
 
 static int
-SavageHelpSolidROP(ScrnInfoPtr pScrn, int *fg, int pm, int *rop)
+SavageHelpSolidROP(ScrnInfoPtr pScrn, int *fg, unsigned int pm, int *rop)
 {
     XAAInfoRecPtr infoRec = GET_XAAINFORECPTR_FROM_SCRNINFOPTR(pScrn);
     int ret = 0;
@@ -639,7 +643,7 @@ SavageHelpSolidROP(ScrnInfoPtr pScrn, int *fg, int pm, int *rop)
     if(pm == infoRec->FullPlanemask) {
 	if(!NO_SRC_ROP(*rop)) 
 	   ret |= ROP_PAT;
-	*rop = XAACopyROP[*rop];
+	*rop = XAAGetCopyROP(*rop);
     } else {	
 	switch(*rop) {
 	case GXnoop:
@@ -654,7 +658,7 @@ SavageHelpSolidROP(ScrnInfoPtr pScrn, int *fg, int pm, int *rop)
 	    ret |= ROP_PAT | ROP_SRC;
 	    break;
 	}
-	*rop = XAACopyROP_PM[*rop];
+	*rop = XAAGetCopyROP_PM(*rop);
     }
 
     return ret;
@@ -682,7 +686,7 @@ SavageSetupForScreenToScreenCopy(
     int cmd;
 
     cmd = BCI_CMD_RECT | BCI_CMD_DEST_GBD | BCI_CMD_SRC_GBD;
-    BCI_CMD_SET_ROP( cmd, XAACopyROP[rop] );
+    BCI_CMD_SET_ROP( cmd, XAAGetCopyROP(rop) );
     if (transparency_color != -1)
         cmd |= BCI_CMD_SEND_COLOR | BCI_CMD_SRC_TRANSPARENT;
 
@@ -722,7 +726,7 @@ SavageSubsequentScreenToScreenCopy(
 
     psav->WaitQueue(psav,6);
     BCI_SEND(psav->SavedBciCmd);
-    if (psav->SavedBgColor != -1) 
+    if (psav->SavedBgColor != 0xffffffff) 
 	BCI_SEND(psav->SavedBgColor);
     BCI_SEND(BCI_X_Y(x1, y1));
     BCI_SEND(BCI_X_Y(x2, y2));
@@ -739,7 +743,7 @@ SavageSetupForSolidFill(
     ScrnInfoPtr pScrn,
     int color, 
     int rop,
-    unsigned planemask)
+    unsigned int planemask)
 {
     SavagePtr psav = SAVPTR(pScrn);
     XAAInfoRecPtr xaaptr = GET_XAAINFORECPTR_FROM_SCRNINFOPTR( pScrn );
@@ -756,7 +760,7 @@ SavageSetupForSolidFill(
     {
 	if( color == 0 )
 	    rop = GXclear;
-	else if( color == xaaptr->FullPlanemask )
+	else if( (unsigned int)color == xaaptr->FullPlanemask )
 	    rop = GXset;
     }
 
@@ -802,7 +806,7 @@ SavageSetupForScreenToScreenColorExpand(
     int bg,
     int fg,
     int rop,
-    unsigned planemask)
+    unsigned int planemask)
 {
 /*    SavagePtr psav = SAVPTR(pScrn); */
 }
@@ -827,7 +831,7 @@ SavageSetupForCPUToScreenColorExpandFill(
     int fg,
     int bg,
     int rop,
-    unsigned planemask)
+    unsigned int planemask)
 {
     SavagePtr psav = SAVPTR(pScrn);
     int cmd;
@@ -877,7 +881,7 @@ SavageSubsequentScanlineCPUToScreenColorExpandFill(
     w = (w + 31) & ~31;
     if( psav->SavedBciCmd & BCI_CMD_SEND_COLOR )
 	BCI_SEND(psav->SavedFgColor);
-    if( psav->SavedBgColor != -1 )
+    if( psav->SavedBgColor != 0xffffffff )
 	BCI_SEND(psav->SavedBgColor);
     BCI_SEND(BCI_X_Y(x, y));
     BCI_SEND(BCI_W_H(w, 1));
@@ -929,7 +933,7 @@ SavageSetupForMono8x8PatternFill(
     int fg, 
     int bg,
     int rop,
-    unsigned planemask)
+    unsigned int planemask)
 {
     SavagePtr psav = SAVPTR(pScrn);
     int cmd;
@@ -980,7 +984,7 @@ SavageSubsequentMono8x8PatternFillRect(
     BCI_SEND(psav->SavedBciCmd);
     if( psav->SavedBciCmd & BCI_CMD_SEND_COLOR )
 	BCI_SEND(psav->SavedFgColor);
-    if( psav->SavedBgColor != -1 )
+    if( psav->SavedBgColor != 0xffffffff )
 	BCI_SEND(psav->SavedBgColor);
     BCI_SEND(BCI_X_Y(x, y));
     BCI_SEND(BCI_W_H(w, h));

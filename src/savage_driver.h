@@ -3,6 +3,8 @@
 #ifndef SAVAGE_VGAHWMMIO_H
 #define SAVAGE_VGAHWMMIO_H
 
+#define MODE_24 24
+
 #include "xf86_ansic.h"
 #include "compiler.h"
 #include "vgaHW.h"
@@ -15,6 +17,7 @@
 #include "mipointer.h"
 #include "micmap.h"
 #include "fb.h"
+#include "fboverlay.h"
 #include "xf86cmap.h"
 #include "vbe.h"
 #include "xaa.h"
@@ -70,6 +73,10 @@ typedef struct {
     unsigned int  MMPR0, MMPR1, MMPR2, MMPR3;
 } SavageRegRec, *SavageRegPtr;
 
+typedef  struct {
+    CARD32 redMask, greenMask, blueMask;
+    int redShift, greenShift, blueShift;
+} savageOverlayRec;
 
 typedef struct _Savage {
     SavageRegRec	SavedReg;
@@ -85,7 +92,7 @@ typedef struct _Savage {
     int			videoRambytes;
     int			videoRamKbytes;
     int			MemOffScreen;
-    CARD32		CursorKByte;
+    int			CursorKByte;
 
     /* These are physical addresses. */
     unsigned long	FrameBufferBase;
@@ -178,8 +185,6 @@ typedef struct _Savage {
     unsigned int	SavedSbdOffset;
     unsigned int	SavedSbd;
 
-    /* Support for Int10 processing */
-    xf86Int10InfoPtr	pInt10;
     SavageModeTablePtr	ModeTable;
 
     /* Support for the Savage command overflow buffer. */
@@ -203,6 +208,11 @@ typedef struct _Savage {
     int			dwBCIWait2DIdle;
     XF86OffscreenImagePtr offscreenImages;
 
+    /* Support for Overlays */
+     unsigned char *	FBStart2nd;
+     savageOverlayRec	overlay;
+     int                 overlayDepth;
+     int			primStreamBpp;
 } SavageRec, *SavagePtr;
 
 /* Video flags. */
@@ -213,7 +223,6 @@ typedef struct _Savage {
 
 /* Make the names of these externals driver-unique */
 #define gpScrn savagegpScrn
-#define myOUTREG savageOUTREG
 #define readdw savagereaddw
 #define readfb savagereadfb
 #define writedw savagewritedw
@@ -271,6 +280,23 @@ unsigned short SavageGetBIOSModes(
 /* In savage_video.c */
 
 void SavageInitVideo( ScreenPtr pScreen );
+
+/* In savage_streams.c */
+
+void SavageStreamsOn(ScrnInfoPtr pScrn);
+void SavageStreamsOff(ScrnInfoPtr pScrn);
+void SavageInitSecondaryStream(ScrnInfoPtr pScrn);
+
+#if (MODE_24 == 32)
+# define  BYTES_PP24 4
+#else
+# define BYTES_PP24 3
+#endif
+
+
+#define DEPTH_BPP(depth) (depth == 24 ? (BYTES_PP24 << 3) : (depth + 7) & ~0x7)
+#define DEPTH_2ND(pScrn) (pScrn->depth > 8 ? pScrn->depth\
+                              : SAVPTR(pScrn)->overlayDepth)
 
 #endif /* SAVAGE_VGAHWMMIO_H */
 

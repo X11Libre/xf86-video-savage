@@ -35,18 +35,18 @@ SavageSetTextMode( SavagePtr psav )
 {
     /* Restore display device if changed. */
     if( psav->iDevInfo != psav->iDevInfoPrim ) {
-	SavageClearVM86Regs( psav->pInt10 );
-	psav->pInt10->ax = 0x4f14;
-	psav->pInt10->bx = 0x0003;
-	psav->pInt10->cx = psav->iDevInfoPrim;
-	xf86ExecX86int10( psav->pInt10 );
+	SavageClearVM86Regs( psav->pVbe->pInt10 );
+	psav->pVbe->pInt10->ax = 0x4f14;
+	psav->pVbe->pInt10->bx = 0x0003;
+	psav->pVbe->pInt10->cx = psav->iDevInfoPrim;
+	xf86ExecX86int10( psav->pVbe->pInt10 );
     }
 
-    SavageClearVM86Regs( psav->pInt10 );
+    SavageClearVM86Regs( psav->pVbe->pInt10 );
 
-    psav->pInt10->ax = 0x83;
+    psav->pVbe->pInt10->ax = 0x83;
 
-    xf86ExecX86int10( psav->pInt10 );
+    xf86ExecX86int10( psav->pVbe->pInt10 );
 }
 
 
@@ -69,31 +69,31 @@ SavageSetVESAMode( SavagePtr psav, int n, int Refresh )
 
     /* Establish the refresh rate for this mode. */
 
-    SavageClearVM86Regs( psav->pInt10 );
-    psav->pInt10->ax = 0x4f14;	/* S3 extensions */
-    psav->pInt10->bx = 0x0001;	/* Set default refresh rate */
-    psav->pInt10->cx = n & 0x3fff;
-    psav->pInt10->di = Refresh & 0xffff;
+    SavageClearVM86Regs( psav->pVbe->pInt10 );
+    psav->pVbe->pInt10->ax = 0x4f14;	/* S3 extensions */
+    psav->pVbe->pInt10->bx = 0x0001;	/* Set default refresh rate */
+    psav->pVbe->pInt10->cx = n & 0x3fff;
+    psav->pVbe->pInt10->di = Refresh & 0xffff;
 
-    xf86ExecX86int10( psav->pInt10 );
+    xf86ExecX86int10( psav->pVbe->pInt10 );
 
     /* Set TV type if TV is on. */
     if( psav->TvOn ) {
-	SavageClearVM86Regs( psav->pInt10 );
-	psav->pInt10->ax = 0x4f14;	/* S3 extensions */
-	psav->pInt10->bx = 0x0007;	/* TV extensions */
-	psav->pInt10->cx = psav->PAL ? 0x08 : 0x04;
-	psav->pInt10->dx = 0x0c;
-	xf86ExecX86int10( psav->pInt10 );
+	SavageClearVM86Regs( psav->pVbe->pInt10 );
+	psav->pVbe->pInt10->ax = 0x4f14;	/* S3 extensions */
+	psav->pVbe->pInt10->bx = 0x0007;	/* TV extensions */
+	psav->pVbe->pInt10->cx = psav->PAL ? 0x08 : 0x04;
+	psav->pVbe->pInt10->dx = 0x0c;
+	xf86ExecX86int10( psav->pVbe->pInt10 );
     }
 
     /* Manipulate output device set. */
     if( psav->iDevInfo != iDevInfo ) {
-	SavageClearVM86Regs( psav->pInt10 );
-	psav->pInt10->ax = 0x4f14;	/* S3 extensions */
-	psav->pInt10->bx = 0x0003;	/* set active devices */
-	psav->pInt10->cx = psav->PAL ? 0x08 : 0x04;
-	xf86ExecX86int10( psav->pInt10 );
+	SavageClearVM86Regs( psav->pVbe->pInt10 );
+	psav->pVbe->pInt10->ax = 0x4f14;	/* S3 extensions */
+	psav->pVbe->pInt10->bx = 0x0003;	/* set active devices */
+	psav->pVbe->pInt10->cx = psav->PAL ? 0x08 : 0x04;
+	xf86ExecX86int10( psav->pVbe->pInt10 );
 
 	/* Re-fetch actual device set. */
 	psav->iDevInfo = SavageGetDevice( psav );
@@ -127,13 +127,13 @@ SavageSetVESAMode( SavagePtr psav, int n, int Refresh )
 
 static int SavageGetDevice( SavagePtr psav )
 {
-    SavageClearVM86Regs( psav->pInt10 );
-    psav->pInt10->ax = 0x4f14;	/* S3 extensions */
-    psav->pInt10->bx = 0x0103;	/* get active devices */
+    SavageClearVM86Regs( psav->pVbe->pInt10 );
+    psav->pVbe->pInt10->ax = 0x4f14;	/* S3 extensions */
+    psav->pVbe->pInt10->bx = 0x0103;	/* get active devices */
 
-    xf86ExecX86int10( psav->pInt10 );
+    xf86ExecX86int10( psav->pVbe->pInt10 );
 
-    return ((psav->pInt10->cx) & 0xf);
+    return ((psav->pVbe->pInt10->cx) & 0xf);
 }
 
 
@@ -184,15 +184,14 @@ SavageGetBIOSModes(
     unsigned short iModeCount = 0;
     unsigned short int *mode_list;
     pointer vbeLinear = NULL;
-    vbeControllerInfoPtr vbe = NULL;
+    VbeInfoBlock *vbe;
     int vbeReal;
     struct vbe_mode_info_block * vmib;
 
     if( !psav->pVbe )
 	return 0;
 
-    vbe = (vbeControllerInfoPtr) psav->pVbe->memory;
-    vbeLinear = xf86Int10AllocPages( psav->pInt10, 1, &vbeReal );
+    vbeLinear = xf86Int10AllocPages( psav->pVbe->pInt10, 1, &vbeReal );
     if( !vbeLinear )
     {
 	ErrorF( "Cannot allocate scratch page in real mode memory." );
@@ -200,12 +199,11 @@ SavageGetBIOSModes(
     }
     vmib = (struct vbe_mode_info_block *) vbeLinear;
     
-    for (
-	mode_list = xf86int10Addr( psav->pInt10, L_ADD(vbe->VideoModePtr) );
-	*mode_list != 0xffff;
-	mode_list++
-    )
-    {
+    if (!(vbe = VBEGetVBEInfo(psav->pVbe)))
+	return 0;
+
+    for (mode_list = vbe->VideoModePtr; *mode_list != 0xffff; mode_list++) {
+
 	/*
 	 * This is a HACK to work around what I believe is a BUG in the
 	 * Toshiba Satellite BIOSes in 08/2000 and 09/2000.  The BIOS
@@ -221,15 +219,15 @@ SavageGetBIOSModes(
 	if( *mode_list >= 0x0200 )
 	    continue;
 
-	SavageClearVM86Regs( psav->pInt10 );
+	SavageClearVM86Regs( psav->pVbe->pInt10 );
 
-	psav->pInt10->ax = 0x4f01;
-	psav->pInt10->cx = *mode_list;
-	psav->pInt10->es = SEG_ADDR(vbeReal);
-	psav->pInt10->di = SEG_OFF(vbeReal);
-	psav->pInt10->num = 0x10;
+	psav->pVbe->pInt10->ax = 0x4f01;
+	psav->pVbe->pInt10->cx = *mode_list;
+	psav->pVbe->pInt10->es = SEG_ADDR(vbeReal);
+	psav->pVbe->pInt10->di = SEG_OFF(vbeReal);
+	psav->pVbe->pInt10->num = 0x10;
 
-	xf86ExecX86int10( psav->pInt10 );
+	xf86ExecX86int10( psav->pVbe->pInt10 );
 
 	if( 
 	   (vmib->bits_per_pixel == iDepth) &&
@@ -256,8 +254,8 @@ SavageGetBIOSModes(
 		
 		/* Query the refresh rates at this mode. */
 
-		psav->pInt10->cx = *mode_list;
-		psav->pInt10->dx = 0;
+		psav->pVbe->pInt10->cx = *mode_list;
+		psav->pVbe->pInt10->dx = 0;
 
 		do
 		{
@@ -281,14 +279,14 @@ SavageGetBIOSModes(
 			}
 		    }
 
-		    psav->pInt10->ax = 0x4f14;	/* S3 extended functions */
-		    psav->pInt10->bx = 0x0201;	/* query refresh rates */
-		    psav->pInt10->num = 0x10;
-		    xf86ExecX86int10( psav->pInt10 );
+		    psav->pVbe->pInt10->ax = 0x4f14;	/* S3 extended functions */
+		    psav->pVbe->pInt10->bx = 0x0201;	/* query refresh rates */
+		    psav->pVbe->pInt10->num = 0x10;
+		    xf86ExecX86int10( psav->pVbe->pInt10 );
 
-		    s3vModeTable->RefreshRate[iRefresh++] = psav->pInt10->di;
+		    s3vModeTable->RefreshRate[iRefresh++] = psav->pVbe->pInt10->di;
 		}
-		while( psav->pInt10->dx );
+		while( psav->pVbe->pInt10->dx );
 
 		s3vModeTable->RefreshCount = iRefresh;
 
@@ -297,7 +295,9 @@ SavageGetBIOSModes(
 	}
     }
 
-    xf86Int10FreePages( psav->pInt10, vbeLinear, 1 );
+    VBEFreeVBEInfo(vbe);
+
+    xf86Int10FreePages( psav->pVbe->pInt10, vbeLinear, 1 );
 
     return iModeCount;
 }

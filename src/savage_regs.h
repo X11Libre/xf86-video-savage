@@ -66,97 +66,6 @@ enum S3CHIPTAGS {
 #define STREAMS_TIMEOUT_REG		0x8208
 #define MISC_TIMEOUT_REG		0x820c
 
-/* Stream Processor 1 */
-
-/* Primary Stream 1 Frame Buffer Address 0 */
-#define PRI_STREAM_FBUF_ADDR0           0x81c0
-/* Primary Stream 1 Frame Buffer Address 0 */
-#define PRI_STREAM_FBUF_ADDR1           0x81c4
-/* Primary Stream 1 Stride */
-#define PRI_STREAM_STRIDE               0x81c8
-/* Primary Stream 1 Frame Buffer Size */
-#define PRI_STREAM_BUFFERSIZE           0x8214
-
-/* Secondary stream 1 Color/Chroma Key Control */
-#define SEC_STREAM_CKEY_LOW             0x8184
-/* Secondary stream 1 Chroma Key Upper Bound */
-#define SEC_STREAM_CKEY_UPPER           0x8194
-/* Blend Control of Secondary Stream 1 & 2 */
-#define BLEND_CONTROL                   0x8190
-/* Secondary Stream 1 Color conversion/Adjustment 1 */
-#define SEC_STREAM_COLOR_CONVERT1       0x8198
-/* Secondary Stream 1 Color conversion/Adjustment 2 */
-#define SEC_STREAM_COLOR_CONVERT2       0x819c
-/* Secondary Stream 1 Color conversion/Adjustment 3 */
-#define SEC_STREAM_COLOR_CONVERT3       0x81e4
-/* Secondary Stream 1 Horizontal Scaling */
-#define SEC_STREAM_HSCALING             0x81a0
-/* Secondary Stream 1 Frame Buffer Size */
-#define SEC_STREAM_BUFFERSIZE           0x81a8
-/* Secondary Stream 1 Horizontal Scaling Normalization (2K only) */
-#define SEC_STREAM_HSCALE_NORMALIZE	0x81ac
-/* Secondary Stream 1 Horizontal Scaling */
-#define SEC_STREAM_VSCALING             0x81e8
-/* Secondary Stream 1 Frame Buffer Address 0 */
-#define SEC_STREAM_FBUF_ADDR0           0x81d0
-/* Secondary Stream 1 Frame Buffer Address 1 */
-#define SEC_STREAM_FBUF_ADDR1           0x81d4
-/* Secondary Stream 1 Frame Buffer Address 2 */
-#define SEC_STREAM_FBUF_ADDR2           0x81ec
-/* Secondary Stream 1 Stride */
-#define SEC_STREAM_STRIDE               0x81d8
-/* Secondary Stream 1 Window Start Coordinates */
-#define SEC_STREAM_WINDOW_START         0x81f8
-/* Secondary Stream 1 Window Size */
-#define SEC_STREAM_WINDOW_SZ            0x81fc
-/* Secondary Streams Tile Offset */
-#define SEC_STREAM_TILE_OFF             0x821c
-/* Secondary Stream 1 Opaque Overlay Control */
-#define SEC_STREAM_OPAQUE_OVERLAY       0x81dc
-
-
-/* Stream Processor 2 */
-
-/* Primary Stream 2 Frame Buffer Address 0 */
-#define PRI_STREAM2_FBUF_ADDR0          0x81b0
-/* Primary Stream 2 Frame Buffer Address 1 */
-#define PRI_STREAM2_FBUF_ADDR1          0x81b4
-/* Primary Stream 2 Stride */
-#define PRI_STREAM2_STRIDE              0x81b8
-/* Primary Stream 2 Frame Buffer Size */
-#define PRI_STREAM2_BUFFERSIZE          0x8218
-
-/* Secondary Stream 2 Color/Chroma Key Control */
-#define SEC_STREAM2_CKEY_LOW            0x8188
-/* Secondary Stream 2 Chroma Key Upper Bound */
-#define SEC_STREAM2_CKEY_UPPER          0x818c
-/* Secondary Stream 2 Horizontal Scaling */
-#define SEC_STREAM2_HSCALING            0x81a4
-/* Secondary Stream 2 Horizontal Scaling */
-#define SEC_STREAM2_VSCALING            0x8204
-/* Secondary Stream 2 Frame Buffer Size */
-#define SEC_STREAM2_BUFFERSIZE          0x81ac
-/* Secondary Stream 2 Frame Buffer Address 0 */
-#define SEC_STREAM2_FBUF_ADDR0          0x81bc
-/* Secondary Stream 2 Frame Buffer Address 1 */
-#define SEC_STREAM2_FBUF_ADDR1          0x81e0
-/* Secondary Stream 2 Frame Buffer Address 2 */
-#define SEC_STREAM2_FBUF_ADDR2          0x8208
-/* Multiple Buffer/LPB and Secondary Stream 2 Stride */
-#define SEC_STREAM2_STRIDE_LPB          0x81cc
-/* Secondary Stream 2 Color conversion/Adjustment 1 */
-#define SEC_STREAM2_COLOR_CONVERT1      0x81f0
-/* Secondary Stream 2 Color conversion/Adjustment 2 */
-#define SEC_STREAM2_COLOR_CONVERT2      0x81f4
-/* Secondary Stream 2 Color conversion/Adjustment 3 */
-#define SEC_STREAM2_COLOR_CONVERT3      0x8200
-/* Secondary Stream 2 Window Start Coordinates */
-#define SEC_STREAM2_WINDOW_START        0x820c
-/* Secondary Stream 2 Window Size */
-#define SEC_STREAM2_WINDOW_SZ           0x8210
-/* Secondary Stream 2 Opaque Overlay Control */
-#define SEC_STREAM2_OPAQUE_OVERLAY      0x8180
-
 
 #define SUBSYS_STAT_REG			0x8504
 
@@ -198,8 +107,8 @@ enum S3CHIPTAGS {
         VGAIN8(psav->vgaIOBase+4); \
 	VGAOUT8(psav->vgaIOBase+4, 0x17); \
 	if (VGAIN8(psav->vgaIOBase+5) & 0x80) { \
-		while ((VGAIN8(psav->vgaIOBase + 0x0a) & 0x08) == 0x08) ; \
-		while ((VGAIN8(psav->vgaIOBase + 0x0a) & 0x08) == 0x00) ; \
+		while ((VGAIN8(psav->vgaIOBase + 0x0a) & 0x08) == 0x08) {}; \
+		while ((VGAIN8(psav->vgaIOBase + 0x0a) & 0x08) == 0x00) {}; \
 	} \
 }
 
