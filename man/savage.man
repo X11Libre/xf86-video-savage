@@ -14,7 +14,7 @@ savage \- S3 Savage video driver
 .fi
 .SH DESCRIPTION
 .B savage 
-is an XFree86 driver for the S3 Savage family video accelerator chips.  The
+is an __xservername__ driver for the S3 Savage family video accelerator chips.  The
 .B savage
 driver supports PCI and AGP boards with the following chips:
 .TP 16
@@ -51,7 +51,7 @@ driver supports PCI and AGP boards with the following chips:
 .B ProSavage DDR-K
 (8d04)
 .SH CONFIGURATION DETAILS
-Please refer to XF86Config(__filemansuffix__) for general configuration
+Please refer to __xconfigfile__(__filemansuffix__) for general configuration
 details.  This section only covers configuration details specific to this
 driver.
 .PP
@@ -101,7 +101,7 @@ produces the best results with the mobile chips (/MX and /IX), since the BIOS
 knows how to handle the critical but unusual timing requirements of the 
 various LCD panels supported by the chip.  To do this, the driver searches
 through the BIOS mode list, looking for the mode which most closely matches
-the XF86Config mode line.  Some purists find this scheme objectionable.  If 
+the __xconfigfile__ mode line.  Some purists find this scheme objectionable.  If 
 you would rather have the
 .B savage
 driver use your mode line timing exactly, turn off the UseBios option.  
@@ -119,8 +119,8 @@ which is slightly more expensive, but avoids the problem.  Default: off
 .SH FILES
 savage_drv.o
 .SH "SEE ALSO"
-XFree86(1), XF86Config(__filemansuffix__), xf86config(1), Xserver(1), X(__miscmansuffix__)
+__xservername__(__appmansuffix__), __xconfigfile__(__filemansuffix__), xorgconfig(__appmansuffix__), Xserver(__appmansuffix__), X(__miscmansuffix__)
 .SH AUTHORS
 Authors include Tim Roberts (timr@probo.com) and Ani Joshi (ajoshi@unixbox.com)
-for the 4.0 version, and Tim Roberts and S. Marineau for the 3.3 driver from 
+for this version, and Tim Roberts and S. Marineau for the original driver from 
 which this was derived.
