@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_driver.h,v 1.17 2003/04/23 14:18:37 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_driver.h,v 1.16 2003/01/18 15:22:30 eich Exp $ */
 
 #ifndef SAVAGE_VGAHWMMIO_H
 #define SAVAGE_VGAHWMMIO_H

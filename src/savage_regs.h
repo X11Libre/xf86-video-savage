@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_regs.h,v 1.13 2003/04/23 14:18:37 eich Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_regs.h,v 1.11 2002/05/14 20:19:52 alanh Exp $ */
 
 #ifndef _SAVAGE_REGS_H
 #define _SAVAGE_REGS_H

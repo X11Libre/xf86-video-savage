@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_driver.c,v 1.49 2003/11/06 18:38:06 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_driver.c,v 1.48tsi Exp $ */
 /*
  * vim: sw=4 ts=8 ai ic:
  *
