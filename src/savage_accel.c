@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_accel.c,v 1.18 2002/11/08 18:03:32 alanh Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/savage/savage_accel.c,v 1.22 2003/11/03 05:11:29 tsi Exp $ */
 
 /*
  *
@@ -457,9 +457,13 @@ SavageInitAccel(ScreenPtr pScreen)
      * We could double the width ourselves into a reserved frame buffer
      * section, but since I went 18 months with only ONE report of this
      * error, it seems hardly worth the trouble.
+     * Savage4 seems to have problems with 8x8 color patterns.
+     * Not sending the pattern offsetsfixes the lockup but the
+     * drawing problems remain.
+     * Until further investigation we have to disable this.
      */
 
-#if 1
+#if 0
     if( (psav->Chipset == S3_SAVAGE3D) || (psav->Chipset == S3_SAVAGE4) )
     {
 	xaaptr->SetupForColor8x8PatternFill =
@@ -468,8 +472,8 @@ SavageInitAccel(ScreenPtr pScreen)
 		SavageSubsequentColor8x8PatternFillRect;
 	xaaptr->Color8x8PatternFillFlags = 0
 	    | NO_TRANSPARENCY
-	    | HARDWARE_PATTERN_PROGRAMMED_BITS
-	    | HARDWARE_PATTERN_PROGRAMMED_ORIGIN
+	    | HARDWARE_PATTERN_SCREEN_ORIGIN
+	    | ROP_NEEDS_SOURCE
 	    ;
     }
 #endif
@@ -477,7 +481,7 @@ SavageInitAccel(ScreenPtr pScreen)
     /* Solid lines */
 
 #if 1
-    xaaptr->SolidLineFlags = NO_PLANEMASK;
+    xaaptr->SolidLineFlags = NO_PLANEMASK | ROP_NEEDS_SOURCE;
     xaaptr->SetupForSolidLine = SavageSetupForSolidFill;
     xaaptr->SubsequentSolidBresenhamLine = SavageSubsequentSolidBresenhamLine;
     xaaptr->SubsequentSolidTwoPointLine = SavageSubsequentSolidTwoPointLine;
@@ -496,6 +500,7 @@ SavageInitAccel(ScreenPtr pScreen)
 	| SCANLINE_PAD_DWORD
 	| BIT_ORDER_IN_BYTE_MSBFIRST
 	| LEFT_EDGE_CLIPPING
+	| ROP_NEEDS_SOURCE
 	;
     xaaptr->SetupForImageWrite = SavageSetupForImageWrite;
     xaaptr->SubsequentImageWriteRect = SavageSubsequentImageWriteRect;
@@ -506,7 +511,7 @@ SavageInitAccel(ScreenPtr pScreen)
     /* WriteBitmap color expand */
 
 #if 0
-    xaaptr->WriteBitmapFlags = NO_PLANEMASK;
+    xaaptr->WriteBitmapFlags = NO_PLANEMASK | ROP_NEEDS_SOURCE;
     xaaptr->WriteBitmap = SavageWriteBitmapCPUToScreenColorExpand;
 #endif
 
@@ -996,7 +1001,6 @@ SavageSetupForColor8x8PatternFill(
     SavagePtr psav = SAVPTR(pScrn);
 
     int cmd;
-    int mix;
     unsigned int bd;
     int pat_offset;
     
@@ -1008,7 +1012,7 @@ SavageSetupForColor8x8PatternFill(
     cmd = BCI_CMD_RECT | BCI_CMD_RECT_XP | BCI_CMD_RECT_YP
         | BCI_CMD_DEST_GBD | BCI_CMD_PAT_PBD_COLOR_NEW;
         
-    mix = XAAHelpSolidROP( pScrn, &trans_col, planemask, &rop );
+    (void) XAAHelpSolidROP( pScrn, &trans_col, planemask, &rop );
 
     BCI_CMD_SET_ROP(cmd, rop);
     bd = BCI_BD_BW_DISABLE;
@@ -1038,11 +1042,10 @@ SavageSubsequentColor8x8PatternFillRect(
     if( !w || !h )
 	return;
 
-    psav->WaitQueue(psav,6);
+    psav->WaitQueue(psav,5);
     BCI_SEND(psav->SavedBciCmd);
     BCI_SEND(psav->SavedSbdOffset);
     BCI_SEND(psav->SavedSbd);
-    BCI_SEND(BCI_X_Y(patternx,patterny));
     BCI_SEND(BCI_X_Y(x, y));
     BCI_SEND(BCI_W_H(w, h));
 }
