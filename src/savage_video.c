@@ -1520,7 +1520,7 @@ SavageDisplayVideoOld(
 
     /*
      * Process horizontal scaling
-     *  upscaling and downscaling smaller than 2:1 controled by MM8198
+     *  upscaling and downscaling smaller than 2:1 controlled by MM8198
      *  MM8190 controls downscaling mode larger than 2:1
      *  Together MM8190 and MM8198 can set arbitrary downscale up to 64:1
      */

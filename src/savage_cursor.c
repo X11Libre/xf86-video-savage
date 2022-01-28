@@ -267,7 +267,7 @@ SavageSetCursorPosition(
 	yoff = 0;
     }
 
-    /* This is the recomended order to move the cursor */
+    /* This is the recommended order to move the cursor */
         if (psav->IsSecondary) {
 	SelectIGA2();
     	outCRReg( 0x46, (x & 0xff00)>>8 );

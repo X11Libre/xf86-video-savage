@@ -110,10 +110,10 @@ static Bool SavageModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode);
 static Bool SavageCloseScreen(CLOSE_SCREEN_ARGS_DECL);
 static Bool SavageSaveScreen(ScreenPtr pScreen, int mode);
 static void SavageLoadPalette(ScrnInfoPtr pScrn, int numColors,
-			      int *indicies, LOCO *colors,
+			      int *indices, LOCO *colors,
 			      VisualPtr pVisual);
 static void SavageLoadPaletteSavage4(ScrnInfoPtr pScrn, int numColors,
-			      int *indicies, LOCO *colors,
+			      int *indices, LOCO *colors,
 			      VisualPtr pVisual);
 static void SavageUpdateKey(ScrnInfoPtr pScrn, int r, int g, int b);
 static void SavageCalcClock(long freq, int min_m, int min_n1, int max_n1,
@@ -712,7 +712,7 @@ static Bool SavagePciProbe(DriverPtr drv, int entity_num,
 	pEnt = xf86GetEntityInfo(entity_num);
 
 	/* MX, IX, SuperSavage cards support Dual-Head, mark the entity as
-	 * sharable.
+	 * shareable.
 	 */
 	if (pEnt->chipset == S3_SAVAGE_MX || pEnt->chipset == S3_SUPERSAVAGE) {
 	    DevUnion   *pPriv;
@@ -820,7 +820,7 @@ static Bool SavageProbe(DriverPtr drv, int flags)
 
             pEnt = xf86GetEntityInfo(usedChips[i]);
 
-            /* MX, IX, SuperSavage cards support Dual-Head, mark the entity as sharable*/
+            /* MX, IX, SuperSavage cards support Dual-Head, mark the entity as shareable*/
             if(pEnt->chipset == S3_SAVAGE_MX || pEnt->chipset == S3_SUPERSAVAGE)
             {
 		DevUnion   *pPriv;
@@ -1302,7 +1302,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 		    pScrn->overlayFlags = OVERLAY_8_32_DUALFB;
 		} else {
 		    xf86DrvMsg(pScrn->scrnIndex,X_WARNING,"Wrong argument: "
-			       "\"%s\" Ingnoring\n",s);
+			       "\"%s\" Ignoring\n",s);
 		}
 	    } else if (pScrn->depth != 15) {
 		psav->overlayDepth = 8;
@@ -1465,7 +1465,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     /* We support 1X 2X and 4X  */
 #ifdef SAVAGEDRI
 #ifdef XSERVER_LIBPCIACCESS
-    /* Try to read the AGP capabilty block from the device.  If there is
+    /* Try to read the AGP capability block from the device.  If there is
      * no AGP info, the device is PCI.
      */
 
@@ -1479,7 +1479,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
      * capability is present.  The procedure is outlined as follows:
      *
      * 1) Test bit 4 (CAP_LIST) of the PCI status register of the device
-     *    to determine wether or not this device implements any extended
+     *    to determine whether or not this device implements any extended
      *    capabilities.  If this bit is zero, then the device is a PCI 2.1
      *    or earlier device and is not AGP capable, and we can conclude it
      *    to be a PCI device.
@@ -4209,7 +4209,7 @@ void SavageDisableMMIO(ScrnInfoPtr pScrn)
     return;
 }
 
-void SavageLoadPalette(ScrnInfoPtr pScrn, int numColors, int *indicies,
+void SavageLoadPalette(ScrnInfoPtr pScrn, int numColors, int *indices,
 		       LOCO *colors, VisualPtr pVisual)
 {
     SavagePtr psav = SAVPTR(pScrn);
@@ -4239,7 +4239,7 @@ void SavageLoadPalette(ScrnInfoPtr pScrn, int numColors, int *indicies,
     }
     
     for (i=0; i<numColors; i++) {
-	index = indicies[i];
+	index = indices[i];
 	if (index == pScrn->colorKey) updateKey = index;
 	VGAOUT8(0x3c8, index);
 	VGAOUT8(0x3c9, colors[index].red);
@@ -4292,7 +4292,7 @@ SavageUpdateKey(ScrnInfoPtr pScrn, int r, int g, int b)
 #define inStatus1() (hwp->readST01( hwp ))
 #endif
 
-void SavageLoadPaletteSavage4(ScrnInfoPtr pScrn, int numColors, int *indicies,
+void SavageLoadPaletteSavage4(ScrnInfoPtr pScrn, int numColors, int *indices,
 		       LOCO *colors, VisualPtr pVisual)
 {
     SavagePtr psav = SAVPTR(pScrn);
@@ -4304,7 +4304,7 @@ void SavageLoadPaletteSavage4(ScrnInfoPtr pScrn, int numColors, int *indicies,
     for (i=0; i<numColors; i++) {
           if (!(inStatus1() & 0x08))
   	    VerticalRetraceWait(); 
-	index = indicies[i];
+	index = indices[i];
 	VGAOUT8(0x3c8, index);
 	VGAOUT8(0x3c9, colors[index].red);
 	VGAOUT8(0x3c9, colors[index].green);
