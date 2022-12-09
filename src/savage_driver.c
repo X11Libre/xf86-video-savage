@@ -120,7 +120,8 @@ static void SavageCalcClock(long freq, int min_m, int min_n1, int max_n1,
 			   int min_n2, int max_n2, long freq_min,
 			   long freq_max, unsigned int *mdiv,
 			   unsigned int *ndiv, unsigned int *r);
-void SavageGEReset(ScrnInfoPtr pScrn, int from_timeout, int line, char *file);
+void SavageGEReset(ScrnInfoPtr pScrn, int from_timeout,
+                   int line, const char *file);
 void SavagePrintRegs(ScrnInfoPtr pScrn);
 static void SavageDPMS(ScrnInfoPtr pScrn, int mode, int flags);
 static Bool SavageDDC1(ScrnInfoPtr pScrn);
@@ -978,7 +979,7 @@ static void SavageGetPanelInfo(ScrnInfoPtr pScrn)
     vgaHWPtr hwp;
     unsigned char cr6b;
     int panelX, panelY;
-    char * sTechnology = "Unknown";
+    const char *sTechnology = "Unknown";
     enum ACTIVE_DISPLAYS { /* These are the bits in CR6B */
 	ActiveCRT = 0x01,
 	ActiveLCD = 0x02,
@@ -2148,7 +2149,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     if( !psav->NoAccel ) {
-        char *modName = NULL;
+        const char *modName = NULL;
 
 	if (psav->useEXA) {
 	    modName = "exa";
@@ -4372,7 +4373,8 @@ static void SavageCalcClock(long freq, int min_m, int min_n1, int max_n1,
 }
 
 
-void SavageGEReset(ScrnInfoPtr pScrn, int from_timeout, int line, char *file)
+void SavageGEReset(ScrnInfoPtr pScrn, int from_timeout,
+                   int line, const char *file)
 {
     unsigned char cr66;
     int r, success = 0;
