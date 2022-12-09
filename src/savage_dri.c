@@ -733,8 +733,8 @@ Bool SAVAGEDRIScreenInit( ScreenPtr pScreen )
 
    xf86DrvMsg( pScrn->scrnIndex, X_INFO,
 	       "[drm] Sarea %d+%d: %d\n",
-	       sizeof(XF86DRISAREARec), sizeof(SAVAGESAREAPrivRec),
-	       sizeof(XF86DRISAREARec) + sizeof(SAVAGESAREAPrivRec) );
+	       (int) sizeof(XF86DRISAREARec), (int) sizeof(SAVAGESAREAPrivRec),
+	       (int) (sizeof(XF86DRISAREARec) + sizeof(SAVAGESAREAPrivRec)) );
 
    pDRIInfo->SAREASize = SAREA_MAX;
 

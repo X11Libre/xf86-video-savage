@@ -304,9 +304,9 @@ unsigned int GetBlendForFourCC2000( int id )
 void savageOUTREG( SavagePtr psav, unsigned long offset, unsigned long value )
 {
     ErrorF( "MMIO %08lx, was %08lx, want %08lx,", 
-	offset, (CARD32)MMIO_IN32( psav->MapBase, offset ), value );
+	offset, (unsigned long)MMIO_IN32( psav->MapBase, offset ), value );
     MMIO_OUT32( psav->MapBase, offset, value );
-    ErrorF( " now %08lx\n", (CARD32)MMIO_IN32( psav->MapBase, offset ) );
+    ErrorF( " now %08lx\n", (unsigned long)MMIO_IN32( psav->MapBase, offset ) );
 }
 
 #if 0
