@@ -1234,17 +1234,29 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 
 	    psav->shadowFB = TRUE;
 	    psav->rotate = 1;
+#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 24
             xf86DisableRandR();
 	    xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, 
 		       "Rotating screen clockwise"
                        "- acceleration and RandR disabled\n");
+#else
+	    xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
+		       "Rotating screen clockwise"
+                       "- acceleration disabled\n");
+#endif
 	} else if(!xf86NameCmp(s, "CCW")) {
 	    psav->shadowFB = TRUE;
 	    psav->rotate = -1;
+#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 24
             xf86DisableRandR();
             xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
                    "Rotating screen counter clockwise"
                    " - acceleration and RandR disabled\n");
+#else
+            xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
+                   "Rotating screen counter clockwise"
+                   " - acceleration disabled\n");
+#endif
 
 	} else {
 	    xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "\"%s\" is not a valid"
