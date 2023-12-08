@@ -3726,6 +3726,7 @@ static Bool SavageModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     }
 
 
+#if 0
     if (pScrn->bitsPerPixel == 8)
 	psav->HorizScaleFactor = 1;
     else if (pScrn->bitsPerPixel == 16)
@@ -3744,6 +3745,9 @@ static Bool SavageModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 	    mode->CrtcHSkew *= 2;
 	    mode->CrtcHAdjusted = TRUE;
 	}
+#else
+    psav->HorizScaleFactor = 1;
+#endif
     
     if (!vgaHWInit(pScrn, mode))
 	return FALSE;
