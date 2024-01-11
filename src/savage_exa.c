@@ -69,9 +69,6 @@ SavageDownloadFromScreen(PixmapPtr pSrc, int x, int y, int w, int h, char *dst, 
 #define	GXset	0xFF
 #endif
 
-/* Definition moved to savage_accel.c */
-int SavageGetCopyROP(int rop);
-
 static int SavageGetSolidROP(int rop) {
 
     int ALUSolidROP[16] =
