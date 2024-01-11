@@ -3676,8 +3676,6 @@ static Bool SavageModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     SavageRegPtr new = &psav->ModeReg;
     vgaRegPtr vganew = &hwp->ModeReg;
     int vgaCRIndex, vgaCRReg, vgaIOBase;
-    int refresh;
-    unsigned int newmode=0, newrefresh=0;
 
     vgaIOBase = hwp->IOBase;
     vgaCRIndex = vgaIOBase + 4;
@@ -3706,7 +3704,8 @@ static Bool SavageModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 #endif
 
     if (psav->IsSecondary) {
-	refresh = SavageGetRefresh(mode);
+	int refresh = SavageGetRefresh(mode);
+	unsigned int newmode=0, newrefresh=0;
 
         SavageMatchBiosMode(pScrn,mode->HDisplay,mode->VDisplay,refresh,
                             &newmode,&newrefresh);
@@ -4313,15 +4312,15 @@ void SavageLoadPaletteSavage4(ScrnInfoPtr pScrn, int numColors, int *indices,
 		       LOCO *colors, VisualPtr pVisual)
 {
     SavagePtr psav = SAVPTR(pScrn);
-    int i, index;
+    int index;
     int updateKey = -1;
     
     VerticalRetraceWait();
 
-    for (i=0; i<numColors; i++) {
-          if (!(inStatus1() & 0x08))
+    for (int n = 0; n < numColors; n++) {
+	if (!(inStatus1() & 0x08))
   	    VerticalRetraceWait(); 
-	index = indices[i];
+	index = indices[n];
 	VGAOUT8(0x3c8, index);
 	VGAOUT8(0x3c9, colors[index].red);
 	VGAOUT8(0x3c9, colors[index].green);
