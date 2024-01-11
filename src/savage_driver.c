@@ -2161,10 +2161,9 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     if( !psav->NoAccel ) {
-        const char *modName = NULL;
-
 	if (psav->useEXA) {
-	    modName = "exa";
+	    const char *modName = "exa";
+
 	    XF86ModReqInfo req;
 	    int errmaj, errmin;
 	    memset(&req, 0, sizeof(req));
@@ -2180,7 +2179,8 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	    	return FALSE;
 	    }
 	} else {
-	    modName = "xaa";
+	    const char *modName = "xaa";
+
 	    if( !xf86LoadSubModule(pScrn, modName) ) {
 		xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 			   "Falling back to shadowfb\n");
