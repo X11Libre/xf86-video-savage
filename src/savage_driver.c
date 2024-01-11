@@ -2164,11 +2164,11 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	if (psav->useEXA) {
 	    const char *modName = "exa";
 
-	    XF86ModReqInfo req;
+	    XF86ModReqInfo req = {
+		.majorversion = 2,
+		.minorversion = 0
+	    };
 	    int errmaj, errmin;
-	    memset(&req, 0, sizeof(req));
-	    req.majorversion = 2;
-	    req.minorversion = 0;
 	    
 	    if( !LoadSubModule(pScrn->module, modName, 
 		NULL, NULL, NULL, &req, &errmaj, &errmin) ) {
