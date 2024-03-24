@@ -23,7 +23,7 @@
 # Initialize Autoconf
 AC_PREREQ([2.60])
 AC_INIT([xf86-video-savage],
-        [2.4.0],
+        [2.4.1],
         [https://gitlab.freedesktop.org/xorg/driver/xf86-video-savage/-/issues],
         [xf86-video-savage])
 AC_CONFIG_SRCDIR([Makefile.am])
