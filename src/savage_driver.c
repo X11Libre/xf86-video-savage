@@ -641,7 +641,7 @@ static Bool SavageGetRec(ScrnInfoPtr pScrn)
     if (pScrn->driverPrivate)
 	return TRUE;
 
-    pScrn->driverPrivate = xnfcalloc(sizeof(SavageRec), 1);
+    pScrn->driverPrivate = XNFcallocarray(sizeof(SavageRec), 1);
     return TRUE;
 }
 
@@ -732,7 +732,7 @@ static Bool SavagePciProbe(DriverPtr drv, int entity_num,
 		for (j = 0; j < instance; j++)
 		    xf86SetEntityInstanceForScreen(pScrn, pEnt->index, j);
 
-		pPriv->ptr = xnfcalloc(sizeof(SavageEntRec), 1);
+		pPriv->ptr = XNFcallocarray(sizeof(SavageEntRec), 1);
 		pSavageEnt = pPriv->ptr;
 		pSavageEnt->HasSecondary = FALSE;
 	    } else {
@@ -842,7 +842,7 @@ static Bool SavageProbe(DriverPtr drv, int flags)
 		    for (j = 0; j < instance; j++)
 			xf86SetEntityInstanceForScreen(pScrn, pEnt->index, j);
 
-		    pPriv->ptr = xnfcalloc(sizeof(SavageEntRec), 1);
+		    pPriv->ptr = XNFcallocarray(sizeof(SavageEntRec), 1);
 		    pSavageEnt = pPriv->ptr;
 		    pSavageEnt->HasSecondary = FALSE;
 		} else {
