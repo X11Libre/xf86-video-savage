@@ -2113,7 +2113,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	}
     }
 
-    clockRanges = xnfalloc(sizeof(ClockRange));
+    clockRanges = XNFalloc(sizeof(ClockRange));
     clockRanges->next = NULL;
     clockRanges->minClock = 10000;
     clockRanges->maxClock = psav->maxClock;
