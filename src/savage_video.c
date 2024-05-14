@@ -1891,11 +1891,7 @@ SavageDisplayVideo2000(
 static void
 SavageFillKeyHelper(DrawablePtr pDraw, uint32_t colorKey, RegionPtr clipBoxes)
 {
-#if HAVE_XV_DRAWABLE_HELPER
     xf86XVFillKeyHelperDrawable(pDraw, colorKey, clipBoxes);
-#else
-    xf86XVFillKeyHelper(pDraw->pScreen, colorKey, clipBoxes);
-#endif
 }
 
 static int 

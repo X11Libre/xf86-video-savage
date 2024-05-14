@@ -112,10 +112,6 @@ CFLAGS="$XORG_CFLAGS"
 AC_CHECK_DECL(XSERVER_LIBPCIACCESS,
               [XSERVER_LIBPCIACCESS=yes], [XSERVER_LIBPCIACCESS=no],
               [#include "xorg-server.h"])
-AC_CHECK_DECL(xf86XVFillKeyHelperDrawable,
-	      [AC_DEFINE(HAVE_XV_DRAWABLE_HELPER, 1, [Have xf86XVFillKeyHelperDrawable prototype])],
-	      [],
-	      [#include "xf86xv.h"])
 CFLAGS="$save_CFLAGS"
 
 if test "x$XSERVER_LIBPCIACCESS" = xyes; then
