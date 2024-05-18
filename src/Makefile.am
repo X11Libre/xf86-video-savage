@@ -31,7 +31,6 @@ savage_drv_ladir = @moduledir@/drivers
 savage_drv_la_SOURCES = \
          compat-api.h \
          savage_accel.c \
-	 savage_xaa.c \
 	 savage_exa.c \
          savage_bci.h \
          savage_common.h \

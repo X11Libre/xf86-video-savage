@@ -11,6 +11,7 @@
  * Created 20/03/97 by Sebastien Marineau for 3.3.6
  * Modified 17-Nov-2000 by Tim Roberts for 4.0.1
  * Modified Feb-2004 by Alex Deucher - integrating DRI support
+ * Modified 2005-2006 by Alex Deucher - adding exa support
  * Revision: 
  *
  */
@@ -1535,7 +1536,7 @@ SavageInitAccel(ScreenPtr pScreen)
     if (psav->useEXA)
 	return SavageEXAInit(pScreen);
     else
-    	return SavageXAAInit(pScreen);
+	return FALSE;
 }
 
 int SavageGetCopyROP(int rop) {
@@ -1562,6 +1563,14 @@ int SavageGetCopyROP(int rop) {
 
     return (ALUCopyROP[rop]);
 
+}
+
+/* The sync function for the GE */
+void
+SavageAccelSync(ScrnInfoPtr pScrn)
+{
+    SavagePtr psav = SAVPTR(pScrn);
+    psav->WaitIdleEmpty(psav);
 }
 
 /* Routines for debugging. */

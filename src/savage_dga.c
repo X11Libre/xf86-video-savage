@@ -34,9 +34,6 @@ in this Software without prior written authorization from the XFree86 Project.
  *
  */
 
-#ifdef HAVE_XAA_H
-#include "xaalocal.h"
-#endif
 #include "savage_driver.h"
 #include "dgaproc.h"
 
@@ -47,10 +44,6 @@ static Bool Savage_OpenFramebuffer(ScrnInfoPtr, char **, unsigned char **,
 static Bool Savage_SetMode(ScrnInfoPtr, DGAModePtr);
 static int  Savage_GetViewport(ScrnInfoPtr);
 static void Savage_SetViewport(ScrnInfoPtr, int, int, int);
-#ifdef HAVE_XAA_H
-static void Savage_FillRect(ScrnInfoPtr, int, int, int, int, unsigned long);
-static void Savage_BlitRect(ScrnInfoPtr, int, int, int, int, int, int);
-#endif
 
 static
 DGAFunctionRec Savage_DGAFuncs = {
@@ -60,12 +53,7 @@ DGAFunctionRec Savage_DGAFuncs = {
     Savage_SetViewport,
     Savage_GetViewport,
     SavageAccelSync,
-#ifdef HAVE_XAA_H
-    Savage_FillRect,
-    Savage_BlitRect,
-#else
     NULL, NULL,
-#endif
     NULL			 /* BlitTransRect */
 };
 
@@ -133,10 +121,6 @@ SECOND_PASS:
 
 	mode->mode = pMode;
 	mode->flags = DGA_CONCURRENT_ACCESS | DGA_PIXMAP_AVAILABLE;
-#ifdef HAVE_XAA_H
-	if(!psav->NoAccel)
-	    mode->flags |= DGA_FILL_RECT | DGA_BLIT_RECT;
-#endif
 	if(pMode->Flags & V_DBLSCAN)
 	    mode->flags |= DGA_DOUBLESCAN;
 	if(pMode->Flags & V_INTERLACE)
@@ -349,43 +333,6 @@ Savage_SetViewport(
     psav->DGAViewportStatus = 0;  /* MGAAdjustFrame loops until finished */
 }
 
-#ifdef HAVE_XAA_H
-static void 
-Savage_FillRect (
-    ScrnInfoPtr pScrn, 
-    int x, int y, int w, int h, 
-    unsigned long color
-){
-    SavagePtr psav = SAVPTR(pScrn);
-
-    if(psav->AccelInfoRec) {
-	(*psav->AccelInfoRec->SetupForSolidFill)(pScrn, color, GXcopy, ~0);
-	(*psav->AccelInfoRec->SubsequentSolidFillRect)(pScrn, x, y, w, h);
-	SET_SYNC_FLAG(psav->AccelInfoRec);
-    }
-}
-
-static void 
-Savage_BlitRect(
-    ScrnInfoPtr pScrn, 
-    int srcx, int srcy, 
-    int w, int h, 
-    int dstx, int dsty
-){
-    SavagePtr psav = SAVPTR(pScrn);
-
-    if(psav->AccelInfoRec) {
-    int xdir = ((srcx < dstx) && (srcy == dsty)) ? -1 : 1;
-    int ydir = (srcy < dsty) ? -1 : 1;
-
-    (*psav->AccelInfoRec->SetupForScreenToScreenCopy)(
-	pScrn, xdir, ydir, GXcopy, ~0, -1);
-    (*psav->AccelInfoRec->SubsequentScreenToScreenCopy)(
-	pScrn, srcx, srcy, dstx, dsty, w, h);
-    SET_SYNC_FLAG(psav->AccelInfoRec);
-    }
-}
-#endif
 
 static Bool 
 Savage_OpenFramebuffer(

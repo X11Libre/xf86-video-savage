@@ -51,9 +51,6 @@
 #include "compiler.h"
 #include "vgaHW.h"
 #include "xf86.h"
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 6
-#include "xf86Resources.h"
-#endif
 #include "xf86Modes.h"
 #include "xf86Pci.h"
 #include "xf86_OSproc.h"
@@ -64,9 +61,6 @@
 #include "fboverlay.h"
 #include "xf86cmap.h"
 #include "vbe.h"
-#ifdef HAVE_XAA_H
-#include "xaa.h"
-#endif
 #include "xf86fbman.h"
 #include "exa.h"
 #include "xf86xv.h"
@@ -423,16 +417,9 @@ typedef struct _Savage {
     unsigned long	pbd_high;
     unsigned long	sbd_high;
 
-    /* Support for XAA acceleration */
-#ifdef HAVE_XAA_H
-    XAAInfoRecPtr	AccelInfoRec;
-#endif
-    xRectangle		Rect;
     unsigned int	SavedBciCmd;
     unsigned int	SavedFgColor;
     unsigned int	SavedBgColor;
-    unsigned int	SavedSbdOffset;
-    unsigned int	SavedSbd;
 
     SavageModeTablePtr	ModeTable;
 
@@ -601,8 +588,7 @@ void SavageSetGBD(ScrnInfoPtr);
 void SavageAccelSync(ScrnInfoPtr);
 /*int SavageHelpSolidROP(ScrnInfoPtr pScrn, int *fg, int pm, int *rop);*/
 
-/* XAA and EXA */
-Bool SavageXAAInit(ScreenPtr);
+/* EXA */
 Bool SavageEXAInit(ScreenPtr);
 
 /* In savage_i2c.c. */

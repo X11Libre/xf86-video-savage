@@ -61,10 +61,6 @@
 #include "savage_bci.h"
 #include "savage_streams.h"
 
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 6
-#include "xf86RAC.h"
-#endif
-
 #define TRANSPARENCY_KEY 0xff;
 
 #ifdef SAVAGEDRI
@@ -1278,22 +1274,9 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 
     if(!psav->NoAccel) {
         from = X_DEFAULT;
-#ifdef HAVE_XAA_H
-        char *strptr;
-        if((strptr = (char *)xf86GetOptValString(psav->Options, OPTION_ACCELMETHOD))) {
-	    if(!xf86NameCmp(strptr,"XAA")) {
-	        from = X_CONFIG;
-	        psav->useEXA = FALSE;
-	    } else if(!xf86NameCmp(strptr,"EXA")) {
-	       from = X_CONFIG;
-	       psav->useEXA = TRUE;
-	    }
-        }
-#else
 	psav->useEXA = TRUE;
-#endif
-       xf86DrvMsg(pScrn->scrnIndex, from, "Using %s acceleration architecture\n",
-		psav->useEXA ? "EXA" : "XAA");
+	xf86DrvMsg(pScrn->scrnIndex, from,
+		   "Using %s acceleration architecture\n", "EXA");
     }
 
     if ((s = xf86GetOptValString(psav->Options, OPTION_OVERLAY))) {
@@ -2179,14 +2162,10 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	    	return FALSE;
 	    }
 	} else {
-	    const char *modName = "xaa";
-
-	    if( !xf86LoadSubModule(pScrn, modName) ) {
-		xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-			   "Falling back to shadowfb\n");
-		psav->NoAccel = 1;
-		psav->shadowFB = 1;
-	    } 
+	    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		       "Falling back to shadowfb\n");
+	    psav->NoAccel = 1;
+	    psav->shadowFB = 1;
 	}
     }
 
@@ -4016,12 +3995,6 @@ static Bool SavageCloseScreen(CLOSE_SCREEN_ARGS_DECL)
 	psav->EXADriverPtr = NULL;
     }
 
-#ifdef HAVE_XAA_H
-    if( psav->AccelInfoRec ) {
-        XAADestroyInfoRec( psav->AccelInfoRec );
-	psav->AccelInfoRec = NULL;
-    }
-#endif
 
     if( psav->DGAModes ) {
 	free( psav->DGAModes );

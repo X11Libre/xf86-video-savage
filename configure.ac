@@ -63,7 +63,7 @@ XORG_DRIVER_CHECK_EXT(XV, videoproto)
 XORG_DRIVER_CHECK_EXT(DPMSExtension, xextproto)
 
 # Obtain compiler/linker options for the driver dependencies
-PKG_CHECK_MODULES(XORG, [xorg-server >= 1.1.0 xproto fontsproto $REQUIRED_MODULES])
+PKG_CHECK_MODULES(XORG, [xorg-server >= 1.18.0 xproto fontsproto $REQUIRED_MODULES])
 PKG_CHECK_MODULES(XEXT, [xextproto >= 7.0.99.1],
                   HAVE_XEXTPROTO_71="yes"; AC_DEFINE(HAVE_XEXTPROTO_71, 1, [xextproto 7.1 available]),
                   HAVE_XEXTPROTO_71="no")
@@ -106,24 +106,6 @@ if test "$DRI" = yes; then
         AC_DEFINE(SAVAGEDRI,1,[Enable DRI driver support])
         AC_DEFINE(SAVAGEDRI_DEVEL,1,[Enable developmental DRI driver support])
 fi
-
-AC_ARG_ENABLE(xaa,
-              AS_HELP_STRING([--enable-xaa],
-                             [Enable legacy X Acceleration Architecture (XAA) [default=auto]]),
-              [XAA="$enableval"],
-              [XAA=auto])
-if test "x$XAA" != xno; then
-        save_CFLAGS=$CFLAGS
-        save_CPPFLAGS=$CPPFLAGS
-        CFLAGS=$XORG_CFLAGS
-        CPPFLAGS="$XORG_CFLAGS"
-        AC_CHECK_HEADERS([xaa.h], XAA=yes, XAA=no)
-        CFLAGS=$save_CFLAGS
-        CPPFLAGS=$save_CPPFLAGS
-fi
-AC_MSG_CHECKING([whether to include XAA support])
-AM_CONDITIONAL(XAA, test "x$XAA" = xyes)
-AC_MSG_RESULT([$XAA])
 
 save_CFLAGS="$CFLAGS"
 CFLAGS="$XORG_CFLAGS"

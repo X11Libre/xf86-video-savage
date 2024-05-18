@@ -31,11 +31,6 @@
 #include "xf86.h"
 #include "xf86_OSproc.h"
 
-#ifdef HAVE_XAA_H
-#include "xaalocal.h"
-#include "xaarop.h"
-#endif
-
 #include "xf86Pci.h"
 #include "xf86fbman.h"
 
@@ -128,10 +123,6 @@ static void SAVAGEWakeupHandler(WAKEUPHANDLER_ARGS_DECL)
    }
    if (psav->useEXA)
 	exaMarkSync(pScreen);
-#ifdef HAVE_XAA_H
-   else
-	psav->AccelInfoRec->NeedToSync = TRUE;
-#endif
    /* FK: this flag doesn't seem to be used. */
 }
 
@@ -1364,10 +1355,6 @@ SAVAGEDRIMoveBuffers(WindowPtr pParent, DDXPointRec ptOldOrg,
     BCI_SEND(0xc0020000); /* wait for 2D idle */
     if (psav->useEXA)
 	exaMarkSync(pScreen);
-#ifdef HAVE_XAA_H
-    else
-	psav->AccelInfoRec->NeedToSync = TRUE;
-#endif
 }
 
 static void 
