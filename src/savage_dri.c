@@ -103,7 +103,6 @@ static void SAVAGEDestroyContext( ScreenPtr pScreen, drm_context_t hwContext,
 
 static void SAVAGEWakeupHandler(WAKEUPHANDLER_ARGS_DECL)
 {
-   SCREEN_PTR(arg);
    ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
    SavagePtr psav = SAVPTR(pScrn);
 
@@ -128,7 +127,6 @@ static void SAVAGEWakeupHandler(WAKEUPHANDLER_ARGS_DECL)
 
 static void SAVAGEBlockHandler(BLOCKHANDLER_ARGS_DECL)
 {
-   SCREEN_PTR(arg);
    ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
    SavagePtr psav = SAVPTR(pScrn);
 

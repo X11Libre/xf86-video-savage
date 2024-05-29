@@ -42,9 +42,8 @@ SavageRefreshArea(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 
 
 void
-SavagePointerMoved(SCRN_ARG_TYPE arg, int x, int y)
+SavagePointerMoved(ScrnInfoPtr pScrn, int x, int y)
 {
-    SCRN_INFO_PTR(arg);
     SavagePtr psav = SAVPTR(pScrn);
     int newX, newY;
 
@@ -56,7 +55,7 @@ SavagePointerMoved(SCRN_ARG_TYPE arg, int x, int y)
 	newY = pScrn->pScreen->width - x - 1;
     }
 
-    (*psav->PointerMoved)(arg, newX, newY);
+    (*psav->PointerMoved)(pScrn, newX, newY);
 }
 
 void

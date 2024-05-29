@@ -406,7 +406,7 @@ typedef struct _Savage {
     /* Support for shadowFB and rotation */
     unsigned char *	ShadowPtr;
     int			ShadowPitch;
-    void		(*PointerMoved)(SCRN_ARG_TYPE arg, int x, int y);
+    void		(*PointerMoved)(ScrnInfoPtr pScrn, int x, int y);
 
     /* support for EXA */
     ExaDriverPtr        EXADriverPtr;
@@ -569,9 +569,9 @@ extern void SavageCommonCalcClock(long freq, int min_m, int min_n1,
 			int max_n1, int min_n2, int max_n2,
 			long freq_min, long freq_max,
 			unsigned char *mdiv, unsigned char *ndiv);
-void SavageAdjustFrame(ADJUST_FRAME_ARGS_DECL);
+void SavageAdjustFrame(ScrnInfoPtr pScrn, int x, int y);
 void SavageDoAdjustFrame(ScrnInfoPtr pScrn, int y, int x, int crtc2);
-Bool SavageSwitchMode(SWITCH_MODE_ARGS_DECL);
+Bool SavageSwitchMode(ScrnInfoPtr pScrn, DisplayModePtr mode);
 
 /* In savage_cursor.c. */
 
@@ -597,7 +597,7 @@ Bool SavageI2CInit(ScrnInfoPtr pScrn);
 
 /* In savage_shadow.c */
 
-void SavagePointerMoved(SCRN_ARG_TYPE arg, int x, int y);
+void SavagePointerMoved(ScrnInfoPtr pScrn, int x, int y);
 void SavageRefreshArea(ScrnInfoPtr pScrn, int num, BoxPtr pbox);
 void SavageRefreshArea8(ScrnInfoPtr pScrn, int num, BoxPtr pbox);
 void SavageRefreshArea16(ScrnInfoPtr pScrn, int num, BoxPtr pbox);

@@ -268,7 +268,7 @@ Savage_SetMode(
 	pScrn->currentMode = OldMode[index];
 
 	psav->DGAactive = FALSE;
-	SavageSwitchMode(SWITCH_MODE_ARGS(pScrn, pScrn->currentMode));
+	SavageSwitchMode(pScrn, pScrn->currentMode);
 	if( psav->hwcursor && psav->hwc_on )
 	    SavageShowCursor(pScrn);
     } else {
@@ -303,8 +303,7 @@ Savage_SetMode(
 	pScrn->displayWidth = pMode->bytesPerScanline / 
 	    (pMode->bitsPerPixel >> 3);
 
-/*	psav->UseBIOS = FALSE; */
-	SavageSwitchMode(SWITCH_MODE_ARGS(pScrn, pMode->mode));
+	SavageSwitchMode(pScrn, pMode->mode);
 	psav->UseBIOS = holdBIOS;
     }
 
@@ -329,7 +328,7 @@ Savage_SetViewport(
 ){
     SavagePtr psav = SAVPTR(pScrn);
 
-    SavageAdjustFrame(ADJUST_FRAME_ARGS(pScrn, x, y));
+    SavageAdjustFrame(pScrn, x, y);
     psav->DGAViewportStatus = 0;  /* MGAAdjustFrame loops until finished */
 }
 
