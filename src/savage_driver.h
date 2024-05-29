@@ -464,11 +464,6 @@ typedef struct _Savage {
     ScreenWakeupHandlerProcPtr coreWakeupHandler;
     ScreenBlockHandlerProcPtr  coreBlockHandler;
 
-#if 0
-    Bool		haveQuiescense;
-    void		(*GetQuiescence)(ScrnInfoPtr pScrn);
-#endif
-
     Bool		IsPCI;
     Bool		AgpDMA;
     Bool		VertexDMA;
@@ -476,7 +471,7 @@ typedef struct _Savage {
     int 		agpMode;
     drmSize		agpSize;
     FBLinearPtr		reserved;
-    
+
     unsigned int surfaceAllocation[7];
     unsigned int xvmcContext;
     unsigned int DRIrunning;
@@ -512,7 +507,7 @@ typedef struct _Savage {
      * out of the cyMemory calculation.
      */
     int cxMemory,cyMemory;
-    
+
     StatInfoRec     StatInfo; /* save the SVGA state */
 
     /* for dvi option */
@@ -586,7 +581,6 @@ void SavageInitialize2DEngine(ScrnInfoPtr);
 int SavageGetCopyROP(int rop);
 void SavageSetGBD(ScrnInfoPtr);
 void SavageAccelSync(ScrnInfoPtr);
-/*int SavageHelpSolidROP(ScrnInfoPtr pScrn, int *fg, int pm, int *rop);*/
 
 /* EXA */
 Bool SavageEXAInit(ScreenPtr);
@@ -633,17 +627,14 @@ void SavageInitStreamsOld(ScrnInfoPtr pScrn);
 void SavageInitStreamsNew(ScrnInfoPtr pScrn);
 void SavageInitStreams2000(ScrnInfoPtr pScrn);
 
-
 #if (MODE_24 == 32)
-# define  BYTES_PP24 4
+# define BYTES_PP24 4
 #else
 # define BYTES_PP24 3
 #endif
-
 
 #define DEPTH_BPP(depth) (depth == 24 ? (BYTES_PP24 << 3) : (depth + 7) & ~0x7)
 #define DEPTH_2ND(pScrn) (pScrn->depth > 8 ? pScrn->depth\
                               : SAVPTR(pScrn)->overlayDepth)
 
 #endif /* SAVAGE_DRIVER_H */
-

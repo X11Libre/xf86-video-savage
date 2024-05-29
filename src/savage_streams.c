@@ -72,7 +72,7 @@ SavageInitSecondaryStreamOld(ScrnInfoPtr pScrn)
     OUTREG(SSTREAM_VINITIAL_REG, 0 );
     OUTREG(SSTREAM_FBADDR0_REG, offset & 0x1ffffff & ~BASE_PAD);
     OUTREG(SSTREAM_FBADDR1_REG, 0 );
-    
+
     OUTREG(SSTREAM_STRIDE_REG, pitch);
     OUTREG(SSTREAM_WINDOW_START_REG, OS_XY(0,0));
     OUTREG(SSTREAM_WINDOW_SIZE_REG, 
@@ -124,7 +124,7 @@ SavageInitSecondaryStreamNew(ScrnInfoPtr pScrn)
     OUTREG(SEC_STREAM_WINDOW_START, OS_XY(0,0));
     /* ? width may need to be increased by 1 */
     OUTREG(SEC_STREAM_WINDOW_SZ, OS_WH(pScrn->displayWidth, pScrn->virtualY));
-    
+
     pitch = (pitch + 7) / 8;
     VGAOUT8(vgaCRIndex, 0x92);
     cr92 = VGAIN8(vgaCRReg);
@@ -148,7 +148,6 @@ SavageInitSecondaryStream(ScrnInfoPtr pScrn)
 void SavageInitStreamsOld(ScrnInfoPtr pScrn)
 {
     SavagePtr psav = SAVPTR(pScrn);
-    /*unsigned long jDelta;*/
     unsigned long format = 0;
 
     /*
@@ -167,7 +166,6 @@ void SavageInitStreamsOld(ScrnInfoPtr pScrn)
         OUTREG( PSTREAM_FBADDR0_REG, pScrn->fbOffset );
         OUTREG( PSTREAM_FBADDR1_REG, 0 );
     } else {
-	/*jDelta = pScrn->displayWidth * (pScrn->bitsPerPixel + 7) / 8;*/
 	switch( pScrn->depth ) {
 	    case  8: format = 0 << 24; break;
 	    case 15: format = 3 << 24; break;
@@ -179,15 +177,10 @@ void SavageInitStreamsOld(ScrnInfoPtr pScrn)
     }
 
     OUTREG(FIFO_CONTROL, 0x18ffeL);
-    
+
     OUTREG( PSTREAM_WINDOW_START_REG, OS_XY(0,0) );
     OUTREG( PSTREAM_WINDOW_SIZE_REG, OS_WH(pScrn->displayWidth, pScrn->virtualY) );
-/*    OUTREG( PSTREAM_FBADDR0_REG, pScrn->fbOffset );
-    OUTREG( PSTREAM_FBADDR1_REG, 0 ); */
-    /*OUTREG( PSTREAM_STRIDE_REG, jDelta );*/
     OUTREG( PSTREAM_CONTROL_REG, format );
-    /*OUTREG( PSTREAM_FBSIZE_REG, jDelta * pScrn->virtualY >> 3 );*/
-
     OUTREG( COL_CHROMA_KEY_CONTROL_REG, 0 );
     OUTREG( SSTREAM_CONTROL_REG, 0 );
     OUTREG( CHROMA_KEY_UPPER_BOUND_REG, 0 );
@@ -236,10 +229,6 @@ void SavageInitStreamsNew(ScrnInfoPtr pScrn)
     } else {
         OUTREG(PRI_STREAM_BUFFERSIZE,
              pScrn->virtualX * pScrn->virtualY * (pScrn->bitsPerPixel >> 3));
-#if 0
-        OUTREG(PRI_STREAM2_BUFFERSIZE,
-             pScrn->virtualX * pScrn->virtualY * (pScrn->bitsPerPixel >> 3));
-#endif
     }
 
     if (psav->FBStart2nd) {
@@ -260,7 +249,6 @@ void SavageInitStreamsNew(ScrnInfoPtr pScrn)
     	OUTREG( SEC_STREAM2_FBUF_ADDR2, 0 );
     	OUTREG( SEC_STREAM2_WINDOW_START, 0 );
     	OUTREG( SEC_STREAM2_WINDOW_SZ, 0 );
-/*    	OUTREG( SEC_STREAM2_BUFFERSIZE, 0 ); */
     	OUTREG( SEC_STREAM2_OPAQUE_OVERLAY, 0 );
     	OUTREG( SEC_STREAM2_STRIDE_LPB, 0 );
 
@@ -279,7 +267,6 @@ void SavageInitStreamsNew(ScrnInfoPtr pScrn)
     	OUTREG( SEC_STREAM_FBUF_ADDR2, 0 );
     	OUTREG( SEC_STREAM_WINDOW_START, 0 );
     	OUTREG( SEC_STREAM_WINDOW_SZ, 0 );
-/*    	OUTREG( SEC_STREAM_BUFFERSIZE, 0 ); */
     	OUTREG( SEC_STREAM_TILE_OFF, 0 );
     	OUTREG( SEC_STREAM_OPAQUE_OVERLAY, 0 );
     	OUTREG( SEC_STREAM_STRIDE, 0 );
@@ -299,7 +286,6 @@ void SavageInitStreamsNew(ScrnInfoPtr pScrn)
     	OUTREG( SEC_STREAM_FBUF_ADDR2, 0 );
     	OUTREG( SEC_STREAM_WINDOW_START, 0 );
     	OUTREG( SEC_STREAM_WINDOW_SZ, 0 );
-/*    	OUTREG( SEC_STREAM_BUFFERSIZE, 0 ); */
     	OUTREG( SEC_STREAM_TILE_OFF, 0 );
     	OUTREG( SEC_STREAM_OPAQUE_OVERLAY, 0 );
     	OUTREG( SEC_STREAM_STRIDE, 0 );
@@ -308,34 +294,12 @@ void SavageInitStreamsNew(ScrnInfoPtr pScrn)
     	OUTREG( SEC_STREAM_COLOR_CONVERT1, 0x0000C892 );
     	OUTREG( SEC_STREAM_COLOR_CONVERT2, 0x00039F9A );
     	OUTREG( SEC_STREAM_COLOR_CONVERT3, 0x01F1547E );
-#if 0
-	sleep(1);
-    	OUTREG( SEC_STREAM2_CKEY_LOW, 0 );
-    	OUTREG( SEC_STREAM2_CKEY_UPPER, 0 );
-    	OUTREG( SEC_STREAM2_HSCALING, 0 );
-    	OUTREG( SEC_STREAM2_VSCALING, 0 );
-    	OUTREG( BLEND_CONTROL, 0 );
-    	OUTREG( SEC_STREAM2_FBUF_ADDR0, 0 );
-    	OUTREG( SEC_STREAM2_FBUF_ADDR1, 0 );
-    	OUTREG( SEC_STREAM2_FBUF_ADDR2, 0 );
-    	OUTREG( SEC_STREAM2_WINDOW_START, 0 );
-    	OUTREG( SEC_STREAM2_WINDOW_SZ, 0 );
-/*    	OUTREG( SEC_STREAM2_BUFFERSIZE, 0 ); */
-    	OUTREG( SEC_STREAM2_OPAQUE_OVERLAY, 0 );
-    	OUTREG( SEC_STREAM2_STRIDE_LPB, 0 );
-
-    	/* These values specify brightness, contrast, saturation and hue. */
-    	OUTREG( SEC_STREAM2_COLOR_CONVERT1, 0x0000C892 );
-    	OUTREG( SEC_STREAM2_COLOR_CONVERT2, 0x00039F9A );
-    	OUTREG( SEC_STREAM2_COLOR_CONVERT3, 0x01F1547E );
-#endif
     }
 }
 
 void SavageInitStreams2000(ScrnInfoPtr pScrn)
 {
     SavagePtr psav = SAVPTR(pScrn);
-    /*unsigned long jDelta;*/
 
     xf86ErrorFVerb(STREAMS_TRACE, "SavageInitStreams\n" );
 
@@ -344,14 +308,12 @@ void SavageInitStreams2000(ScrnInfoPtr pScrn)
     OUTREG(PRI_STREAM2_BUFFERSIZE,
 	   pScrn->virtualX * pScrn->virtualY * (pScrn->bitsPerPixel >> 3));
 
-
     if (psav->FBStart2nd) {
 	unsigned long jDelta = pScrn->displayWidth;
     	OUTREG( PRI_STREAM_BUFFERSIZE, jDelta * pScrn->virtualY >> 3 );
     	OUTREG( PRI_STREAM_FBUF_ADDR0, pScrn->fbOffset );
     	OUTREG( PRI_STREAM_STRIDE, jDelta );
     }
-
 
     OUTREG( SEC_STREAM_CKEY_LOW, (4L << 29) );
     OUTREG( SEC_STREAM_CKEY_UPPER, 0 );
@@ -364,7 +326,6 @@ void SavageInitStreams2000(ScrnInfoPtr pScrn)
     OUTREG( SEC_STREAM_FBUF_ADDR2, 0 );
     OUTREG( SEC_STREAM_WINDOW_START, 0 );
     OUTREG( SEC_STREAM_WINDOW_SZ, 0 );
-/*  OUTREG( SEC_STREAM_BUFFERSIZE, 0 ); */
     OUTREG( SEC_STREAM_TILE_OFF, 0 );
     OUTREG( SEC_STREAM_OPAQUE_OVERLAY, 0 );
     OUTREG( SEC_STREAM_STRIDE, 0 );
@@ -395,7 +356,7 @@ void SavageInitStreams2000(ScrnInfoPtr pScrn)
 static void OverlayTwisterInit(ScrnInfoPtr pScrn)
 {
     SavagePtr psav = SAVPTR(pScrn);
-                                                                                                                    
+
     psav->cxScreen = psav->iResX;
     InitStreamsForExpansion(pScrn);
     PatchEnableSPofPanel(pScrn);
@@ -417,9 +378,9 @@ static
 void PatchEnableSPofPanel(ScrnInfoPtr pScrn)
 {
     SavagePtr psav = SAVPTR(pScrn);
-                                                                                                                    
+
     UnLockExtRegs();
-                                                                                                                    
+
     if (pScrn->bitsPerPixel == 8) {
         OUTREG8(CRT_ADDRESS_REG,0x90);
         OUTREG8(CRT_DATA_REG,INREG8(CRT_DATA_REG)|0x40);
@@ -428,9 +389,9 @@ void PatchEnableSPofPanel(ScrnInfoPtr pScrn)
         OUTREG8(CRT_ADDRESS_REG,0x90);
         OUTREG8(CRT_DATA_REG,INREG8(CRT_DATA_REG)|0x48);
     }
-                                                                                                                    
+
     VerticalRetraceWait();
-                                                                          
+
     OUTREG8(CRT_ADDRESS_REG,0x67);
     OUTREG8(CRT_DATA_REG,(INREG8(CRT_DATA_REG)&0xf3)|0x04);
 
@@ -444,10 +405,7 @@ void PatchEnableSPofPanel(ScrnInfoPtr pScrn)
     }
 
     OUTREG32(PSTREAM_WINDOW_SIZE_REG, 0x0);
-    /*OUTREG32(PSTREAM_WINDOW_SIZE_REG, OS_WH(pScrn->displayWidth, pScrn->virtualY));*/
-
 }
-
 
 /* Function to calculate lcd expansion x,y factor and offset for overlay
  */
@@ -481,8 +439,6 @@ static void InitStreamsForExpansion(ScrnInfoPtr pScrn)
 	0x00090004,	0,
 	0x00030001,	0x00040001,
     };
-
-
 
     PanelSizeX = psav->PanelX;
     PanelSizeY = psav->PanelY;
@@ -527,8 +483,7 @@ static void InitStreamsForExpansion(ScrnInfoPtr pScrn)
        ((PanelSizeX - (psav->XExp1 * ViewPortWidth) / psav->XExp2) / 2 + 7) & 0xfff8;
     psav->displayYoffset = 
        ((PanelSizeY - (psav->YExp1 * ViewPortHeight) / psav->YExp2) / 2);
-
-}  /* InitStreamsForExpansionPM */
+}
 
 void 
 SavageStreamsOn(ScrnInfoPtr pScrn)
@@ -541,8 +496,6 @@ SavageStreamsOn(ScrnInfoPtr pScrn)
     xf86ErrorFVerb(STREAMS_TRACE, "SavageStreamsOn\n" );
 
     /* Sequence stolen from streams.c in M7 NT driver */
-
-
     xf86EnableIO();
 
     /* Unlock extended registers. */
@@ -584,24 +537,10 @@ SavageStreamsOn(ScrnInfoPtr pScrn)
 	    VerticalRetraceWait();
 	    /* Fire up streams! */
 	    VGAOUT16( vgaCRIndex, (jStreamsControl << 8) | EXT_MISC_CTRL2 );
-#if 0
-	    SelectIGA2();
-	    /* Wait for VBLANK. */	
-	    VerticalRetraceWait();
-	    /* Fire up streams! */
-	    VGAOUT16( vgaCRIndex, (jStreamsControl << 8) | EXT_MISC_CTRL2 );
-	    SelectIGA1();
-#endif
 	/* These values specify brightness, contrast, saturation and hue. */
 	    OUTREG( SEC_STREAM_COLOR_CONVERT1, 0x0000C892 );
 	    OUTREG( SEC_STREAM_COLOR_CONVERT2, 0x00039F9A );
 	    OUTREG( SEC_STREAM_COLOR_CONVERT3, 0x01F1547E );
-#if 0
-	    sleep(1);
-	    OUTREG( SEC_STREAM2_COLOR_CONVERT1, 0x0000C892 );
-	    OUTREG( SEC_STREAM2_COLOR_CONVERT2, 0x00039F9A );
-	    OUTREG( SEC_STREAM2_COLOR_CONVERT3, 0x01F1547E );
-#endif
 	}
     }
     else if (psav->Chipset == S3_SAVAGE2000)
@@ -625,18 +564,16 @@ SavageStreamsOn(ScrnInfoPtr pScrn)
 	jStreamsControl = VGAIN8( vgaCRReg ) | ENABLE_STREAMS_OLD;
 
 	/* Wait for VBLANK. */
-	
 	VerticalRetraceWait();
 
 	/* Fire up streams! */
-
 	VGAOUT16( vgaCRIndex, (jStreamsControl << 8) | EXT_MISC_CTRL2 );
 
 	SavageInitStreamsOld( pScrn );
     }
 
     /* Wait for VBLANK. */
-    
+
     VerticalRetraceWait();
 
     /* Turn on secondary stream TV flicker filter, once we support TV. */
@@ -644,7 +581,6 @@ SavageStreamsOn(ScrnInfoPtr pScrn)
     /* SR70 |= 0x10 */
 
     psav->videoFlags |= VF_STREAMS_ON;
-
 }
 
 void
@@ -656,7 +592,7 @@ SavageStreamsOff(ScrnInfoPtr pScrn)
     unsigned short vgaCRReg = psav->vgaIOBase + 5;
 
     xf86ErrorFVerb(STREAMS_TRACE, "SavageStreamsOff\n" );
-    
+
     xf86EnableIO();
 
     /* Unlock extended registers. */
@@ -685,11 +621,6 @@ SavageStreamsOff(ScrnInfoPtr pScrn)
         VGAOUT16( vgaCRIndex, (jStreamsControl << 8) | EXT_MISC_CTRL2 );
     } else {
         VGAOUT16( vgaCRIndex, (jStreamsControl << 8) | EXT_MISC_CTRL2 );
-#if 0
-        SelectIGA2();
-        VGAOUT16( vgaCRIndex, (jStreamsControl << 8) | EXT_MISC_CTRL2 );
-	SelectIGA1();
-#endif
     }
 
     VGAOUT16( vgaCRIndex, 0x0093 );
@@ -697,6 +628,4 @@ SavageStreamsOff(ScrnInfoPtr pScrn)
     VGAOUT8( vgaCRReg, VGAIN8(vgaCRReg) & 0x40 );
 
     psav->videoFlags &= ~VF_STREAMS_ON;
-
 }
-

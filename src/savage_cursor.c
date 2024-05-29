@@ -56,9 +56,6 @@ static void SavageSetCursorColors(ScrnInfoPtr pScrn, int bg, int fg);
 #define outCRReg(reg, val) (VGAHWPTR(pScrn))->writeCrtc( VGAHWPTR(pScrn), reg, val )
 #define inSRReg(reg) (VGAHWPTR(pScrn))->readSeq( VGAHWPTR(pScrn), reg )
 #define outSRReg(reg, val) (VGAHWPTR(pScrn))->writeSeq( VGAHWPTR(pScrn), reg, val )
-#if 0
-#define inStatus1() (VGAHWPTR(pScrn))->readST01( VGAHWPTR(pScrn) )
-#endif
 
 /* 
  * certain HW cursor operations seem 
@@ -79,24 +76,6 @@ static void SavageSetCursorColors(ScrnInfoPtr pScrn, int bg, int fg);
  * the HW cursor position.
  */
 
-#if 0
-static Bool
-SavageUseHWCursor(ScreenPtr pScr, CursorPtr pCurs)
-{
-    ScrnInfoPtr pScrn = xf86ScreenToScrn(pScr);
-    SavagePtr psav = SAVPTR(pScrn);
-
-    if (psav->PanelX != pScrn->currentMode->HDisplay 
-	|| psav->PanelY != pScrn->currentMode->VDisplay) {
-	/* BIT 1 : CRT is active, BIT 2 : LCD is active */
-	unsigned char cr6d = inCRReg( 0x6d );
-	if (cr6d & 0x02)
-	    return FALSE;
-    }
-    return TRUE;
-}
-#endif
-
 Bool 
 SavageHWCursorInit(ScreenPtr pScreen)
 {
@@ -107,7 +86,7 @@ SavageHWCursorInit(ScreenPtr pScreen)
     infoPtr = xf86CreateCursorInfoRec();
     if(!infoPtr) 
         return FALSE;
-    
+
     psav->CursorInfoRec = infoPtr;
 
     infoPtr->MaxWidth = MAX_CURS;
@@ -117,18 +96,6 @@ SavageHWCursorInit(ScreenPtr pScreen)
 		     HARDWARE_CURSOR_AND_SOURCE_WITH_MASK |
 		     HARDWARE_CURSOR_BIT_ORDER_MSBFIRST |
 	             HARDWARE_CURSOR_INVERT_MASK;
-#if 0
-    /*
-     * The /MX family is apparently unique among the Savages, in that
-     * the cursor color is always straight RGB.  The rest of the Savages
-     * use palettized values at 8-bit when not clock doubled.
-     */
-
-    if (((psav->Chipset != S3_SAVAGE4) 
-	 && (inSRReg(0x18) & 0x80) && (inSRReg(0x15) & 0x50))
-	|| S3_SAVAGE_MOBILE_SERIES(psav->Chipset))
-	infoPtr->Flags |= HARDWARE_CURSOR_TRUECOLOR_AT_8BPP; 
-#endif
     /*
      * With streams engine the Cursor seems to be ALWAYS TrueColor 
      *except at least the Savage4
@@ -142,13 +109,7 @@ SavageHWCursorInit(ScreenPtr pScreen)
     infoPtr->HideCursor = SavageHideCursor;
     infoPtr->ShowCursor = SavageShowCursor;
     infoPtr->UseHWCursor = NULL;
-#if 0 /*AGD:  HW cursor seems to work fine even with expansion... */
-    if ((S3_SAVAGE_MOBILE_SERIES(psav->Chipset)
-	 || (S3_MOBILE_TWISTER_SERIES(psav->Chipset))) && !psav->CrtOnly)
-	infoPtr->UseHWCursor = SavageUseHWCursor;
-    else
-	infoPtr->UseHWCursor = NULL;
-#endif
+
     if( !psav->CursorKByte )
 	psav->CursorKByte = pScrn->videoRam - 4;
 
@@ -292,7 +253,6 @@ SavageSetCursorPosition(
 
 }
 
-
 static void 
 SavageSetCursorColors(
     ScrnInfoPtr pScrn,
@@ -300,26 +260,10 @@ SavageSetCursorColors(
     int fg)
 {
     SavagePtr psav = SAVPTR(pScrn);
-#if 0
-    Bool bNeedExtra = FALSE;
-#endif
 
     /* Clock doubled modes need an extra cursor stack write. */
 
-#if 0
-    bNeedExtra =
-        (psav->CursorInfoRec->Flags & HARDWARE_CURSOR_TRUECOLOR_AT_8BPP);
-#endif
-
     /* With the streams engine on HW Cursor seems to be 24bpp ALWAYS */
-    if( 1 
-#if 0
-	|| S3_SAVAGE_MOBILE_SERIES(psav->Chipset) ||
- 	(pScrn->depth == 24) ||
- 	((pScrn->depth == 8) && bNeedExtra)
-#endif
-	) 
-    {
 	/* Do it straight, full 24 bit color. */
        if (psav->IsSecondary) {
             /* cursor 2 */
@@ -352,56 +296,4 @@ SavageSetCursorColors(
 	    outCRReg(0x4b, bg >> 16);
 	}
 	return;
-    }
-#if 0
-    else if( (pScrn->depth == 15) || (pScrn->depth == 16) )
-    {
-	if (pScrn->depth == 15) {
-	    fg = ((fg & 0xf80000) >> 9) |
-		((fg & 0xf800) >> 6) |
-		((fg & 0xf8) >> 3);
-	    bg = ((bg & 0xf80000) >> 9) |
-		((bg & 0xf800) >> 6) |
-		((bg & 0xf8) >> 3);
-	} else {
-	    fg = ((fg & 0xf80000) >> 8) |
-		((fg & 0xfc00) >> 5) |
-		((fg & 0xf8) >> 3);
-	    bg = ((bg & 0xf80000) >> 8) |
-		((bg & 0xfc00) >> 5) |
-		((bg & 0xf8) >> 3);
-	}
-	/* Reset the cursor color stack pointer */
-        inCRReg( 0x45 );
-        outCRReg( 0x4a, fg );
-        outCRReg( 0x4a, fg>>8 );
-	if( bNeedExtra )
-	{
-	    outCRReg( 0x4a, fg );
-	    outCRReg( 0x4a, fg>>8 );
-	}
-	/* Reset the cursor color stack pointer */
-        inCRReg( 0x45 );
-        outCRReg( 0x4b, bg );
-        outCRReg( 0x4b, bg>>8 );
-	if( bNeedExtra )
-	{
-	    outCRReg( 0x4b, bg );
-	    outCRReg( 0x4b, bg>>8 );
-	}
-    }
-    else if( pScrn->depth == 8 )
-    {
-	/* Reset the cursor color stack pointer */
-	inCRReg(0x45);
-	/* Write foreground */
-	outCRReg(0x4a, fg);
-	outCRReg(0x4a, fg);
-	/* Reset the cursor color stack pointer */
-	inCRReg(0x45);
-	/* Write background */
-	outCRReg(0x4b, bg);
-	outCRReg(0x4b, bg);
-    }
-#endif
 }

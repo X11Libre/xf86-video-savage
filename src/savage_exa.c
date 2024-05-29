@@ -45,29 +45,8 @@ SavageDoneCopy(PixmapPtr pDstPixmap);
 Bool
 SavageUploadToScreen(PixmapPtr pDst, int x, int y, int w, int h, char *src, int src_pitch);
 
-#if 1
 Bool
 SavageDownloadFromScreen(PixmapPtr pSrc, int x, int y, int w, int h, char *dst, int dst_pitch);
-#endif
-
-#if 0
-#define	GXclear	0x00
-#define GXand	0x88
-#define	GXandReverse	0x44
-#define	GXcopy	0xCC
-#define	GXandInverted	0x22
-#define	GXnoop	0xAA
-#define	GXxor	0x66
-#define	GXor	0xEE
-#define	GXnor	0x11
-#define	GXequiv	0x99
-#define	GXinvert	0x55
-#define	GXorReverse	0xDD
-#define	GXcopyInverted	0x33
-#define	GXorInverted	0xBB
-#define	GXnand	0x77
-#define	GXset	0xFF
-#endif
 
 static int SavageGetSolidROP(int rop) {
 
@@ -93,7 +72,6 @@ static int SavageGetSolidROP(int rop) {
     };
 
     return (ALUSolidROP[rop]);
-
 }
 
 Bool 
@@ -108,11 +86,9 @@ SavageEXAInit(ScreenPtr pScreen)
 	return FALSE;
     }
 
-    /*ErrorF("in SavageEXAinit\n");*/
-
     psav->EXADriverPtr->exa_major = 2;
     psav->EXADriverPtr->exa_minor = 0;
-    
+
     /* use the linear aperture */
     psav->EXADriverPtr->memoryBase = psav->FBBase + pScrn->fbOffset;
 
@@ -157,7 +133,7 @@ SavageEXAInit(ScreenPtr pScreen)
 
     /* Sync */
     psav->EXADriverPtr->WaitMarker = SavageEXASync;
-#if 1
+
     /* Solid fill */
     psav->EXADriverPtr->PrepareSolid = SavagePrepareSolid;
     psav->EXADriverPtr->Solid = SavageSolid;
@@ -167,17 +143,12 @@ SavageEXAInit(ScreenPtr pScreen)
     psav->EXADriverPtr->PrepareCopy = SavagePrepareCopy;
     psav->EXADriverPtr->Copy = SavageCopy;
     psav->EXADriverPtr->DoneCopy = SavageDoneCopy;
-#endif
+
     /* Composite not implemented yet */
     /* savage3d series only have one tmu */
 
-#if 1
     /* host data blit */
     psav->EXADriverPtr->UploadToScreen = SavageUploadToScreen;
-#endif
-#if 0
-    psav->EXADriverPtr->DownloadFromScreen = SavageDownloadFromScreen;
-#endif
 
     if(!exaDriverInit(pScreen, psav->EXADriverPtr)) {
         xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
@@ -259,38 +230,8 @@ SavagePrepareSolid(PixmapPtr pPixmap, int alu, Pixel planemask, Pixel fg)
         | BCI_CMD_DEST_PBD /*BCI_CMD_DEST_PBD_NEW*/
 	| BCI_CMD_SRC_SOLID;
 
-#if 0
-    if (alu == 3 /*GXcopy*/) {
-	if (fg == 0)
-	    alu = 0 /*GXclear*/;
-	else if (fg == planemask)
-	    alu = 15 /*GXset*/;
-    }
-
-    if (EXA_PM_IS_SOLID(&pPixmap->drawable, planemask)) {
-	if (!((alu == 5 /*GXnoop*/) || (alu == 15 /*GXset*/) || (alu == 0 /*GXclear*/) || (alu == 10 /*GXinvert*/))) 
-	   cmd |= BCI_CMD_SEND_COLOR;
-	rop = SavageGetCopyROP(alu);
-    } else {	
-	switch(alu) {
-	case 5  /*GXnoop*/:
-	    break;
-	case 15 /*GXset*/:
-	case 0  /*GXclear*/:
-	case 10 /*GXinvert*/:
-	    cmd |= BCI_CMD_SEND_COLOR;
-	    fg = planemask;
-	    break;
-	default:
-	    cmd |= BCI_CMD_SEND_COLOR;
-	    break;
-	}
-	rop = SavageGetSolidROP(alu);
-    }
-#else
     cmd |= BCI_CMD_SEND_COLOR;
     rop = SavageGetSolidROP(alu);
-#endif
 
     BCI_CMD_SET_ROP( cmd, rop );
 
@@ -328,16 +269,9 @@ SavageSolid(PixmapPtr pPixmap, int x1, int y1, int x2, int y2)
     /* yes, it has to be done this way... */
     psav->WaitQueue(psav,4);
     BCI_SEND(psav->SavedBciCmd);
-    /*BCI_SEND(psav->pbd_offset);
-    BCI_SEND(psav->pbd_high);*/
-#if 0
-    if ( psav->SavedBciCmd & BCI_CMD_SEND_COLOR )
-	BCI_SEND(psav->SavedFgColor);
-#endif
     BCI_SEND(psav->SavedFgColor);
     BCI_SEND(BCI_X_Y(x1, y1));
     BCI_SEND(BCI_W_H(w, h));
-
 }
 
 static void
@@ -353,8 +287,6 @@ SavagePrepareCopy(PixmapPtr pSrcPixmap, PixmapPtr pDstPixmap, int xdir, int ydir
     SavagePtr psav = SAVPTR(pScrn);
     int cmd;
     BCI_GET_PTR;
-
-    /*ErrorF("in preparecopy\n");*/
 
     cmd = BCI_CMD_RECT | BCI_CMD_DEST_PBD | BCI_CMD_SRC_SBD_COLOR;
 
@@ -421,7 +353,6 @@ SavageCopy(PixmapPtr pDstPixmap, int srcX, int srcY, int dstX, int dstY, int wid
     BCI_SEND(BCI_X_Y(srcX, srcY));
     BCI_SEND(BCI_X_Y(dstX, dstY));
     BCI_SEND(BCI_W_H(width, height));
-
 }
 
 static void
@@ -443,7 +374,7 @@ SavageUploadToScreen(PixmapPtr pDst, int x, int y, int w, int h, char *src, int 
     unsigned int dst_yoffset;
     int agp_possible;
 #endif
-    
+
     exaWaitSync(pDst->drawable.pScreen);
 
     Bpp = pDst->drawable.bitsPerPixel / 8;
@@ -470,7 +401,7 @@ SavageUploadToScreen(PixmapPtr pDst, int x, int y, int w, int h, char *src, int 
 		pSAVAGEDRIServer->agpXVideo.handle,
 		pSAVAGEDRIServer->agpXVideo.size,
 		&pSAVAGEDRIServer->agpXVideo.map)) {
-        
+
             unsigned char * agpMap = pSAVAGEDRIServer->agpXVideo.map;
             unsigned int agpOffset = drmAgpBase(psav->drmFD) + pSAVAGEDRIServer->agpXVideo.offset;
             unsigned int bytesTotal = dst_pitch * h;            
@@ -484,7 +415,7 @@ SavageUploadToScreen(PixmapPtr pDst, int x, int y, int w, int h, char *src, int 
 
                 /* Copy source into AGP buffer */
                 memcpy(agpMap, src, bytesTransfer);
-                
+
                 psav->WaitQueue(psav,6);
                 BCI_SEND(BCI_SET_REGISTER | BCI_SET_REGISTER_COUNT(2) | 0x51);
                 BCI_SEND(agpOffset | 3);        /* Source buffer in AGP memory */
@@ -519,8 +450,6 @@ SavageUploadToScreen(PixmapPtr pDst, int x, int y, int w, int h, char *src, int 
 
     BCI_CMD_SET_ROP( cmd, 0xCC ); /* GXcopy */
 
-    /*ErrorF("in UTS\n");*/
-
     psav->WaitQueue(psav, 6);
     BCI_SEND(cmd);
 
@@ -531,7 +460,7 @@ SavageUploadToScreen(PixmapPtr pDst, int x, int y, int w, int h, char *src, int 
     BCI_SEND(BCI_CLIP_LR(x, x+w-1));
     BCI_SEND(BCI_X_Y(x, y));
     BCI_SEND(BCI_W_H(w, h));
-    
+
     queue = 120 * 1024;
     dwords = (((w * Bpp) + 3) >> 2);
     for (i = 0; i < h; i++) {
@@ -555,12 +484,10 @@ SavageUploadToScreen(PixmapPtr pDst, int x, int y, int w, int h, char *src, int 
 	src += src_pitch;
     }
 
-    /*exaWaitSync(pDst->drawable.pScreen);*/
     exaMarkSync(pDst->drawable.pScreen);
     return TRUE;
 }
 
-#if 1
 Bool
 SavageDownloadFromScreen(PixmapPtr pSrc, int x, int y, int w, int h, char *dst, int dst_pitch)
 {
@@ -581,5 +508,3 @@ SavageDownloadFromScreen(PixmapPtr pSrc, int x, int y, int w, int h, char *dst, 
     }
     return TRUE;
 }
-
-#endif

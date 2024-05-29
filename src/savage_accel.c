@@ -130,7 +130,6 @@ SavageInitialize2DEngine(ScrnInfoPtr pScrn)
 	OUTREG(0x48C18, INREG(0x48C18) & 0x3FF0);
 	/* Setup BCI command overflow buffer */
 	OUTREG(0x48C14, (psav->cobOffset >> 11) | (psav->cobIndex << 29)); /* tim */
-    	/*OUTREG(S3_OVERFLOW_BUFFER, psav->cobOffset >> 11 | 0xE0000000);*/ /* S3 */
 	/* Program shadow status update. */
 	{
 	    unsigned long thresholds = ((psav->bciThresholdLo & 0xffff) << 16) |
@@ -169,8 +168,6 @@ SavageInitialize2DEngine(ScrnInfoPtr pScrn)
 		((psav->bciThresholdHi & 0x1fffe0) >> 5);
 	    OUTREG(0x48C10, thresholds);
 	}
-	/*OUTREG(0x48C10, 0x00700040);*/ /* tim */
-        /*OUTREG(0x48C10, 0x0e440f04L);*/ /* S3 */
 	if( psav->ShadowStatus )
 	{
 	    OUTREG(0x48C0C, psav->ShadowPhysical | 1 );
@@ -201,8 +198,6 @@ SavageInitialize2DEngine(ScrnInfoPtr pScrn)
 	if( psav->ShadowStatus )
 	{
 	    /* Set shadow update thresholds. */
-	    /*OUTREG(0x48C10, 0x6090 );
-	      OUTREG(0x48C14, 0x70A8 );*/
 	    OUTREG(0x48C10, psav->bciThresholdLo >> 2);
 	    OUTREG(0x48C14, psav->bciThresholdHi >> 2);
 	    /* Enable shadow status update */
@@ -235,7 +230,7 @@ void
 SavageSetGBD(ScrnInfoPtr pScrn)
 {
     SavagePtr psav = SAVPTR(pScrn);
-    
+
     UnProtectCRTC();
     UnLockExtRegs();
     VerticalRetraceWait();
@@ -250,7 +245,7 @@ SavageSetGBD(ScrnInfoPtr pScrn)
         /* tileing in 16/32 BPP */
         psav->bTiled = TRUE;        
         psav->lDelta = ((psav->lDelta + 127) >> 7) << 7;
-            
+
         if (S3_SAVAGE3D_SERIES(psav->Chipset))
             psav->ulAperturePitch = 0x2000;
 	else if (psav->Chipset == S3_SAVAGE2000)
@@ -259,7 +254,7 @@ SavageSetGBD(ScrnInfoPtr pScrn)
 							     psav->lDelta);
         else            
             psav->ulAperturePitch = GetTileAperturePitch(pScrn->virtualX,pScrn->bitsPerPixel);
-            
+
         /* Use the aperture for linear screen */
         psav->FBStart = psav->ApertureMap;
     } else {
@@ -268,14 +263,14 @@ SavageSetGBD(ScrnInfoPtr pScrn)
         psav->lDelta = ((psav->lDelta + 31) >> 5) << 5;
         psav->ulAperturePitch = psav->lDelta;            
     }
-        
+
     psav->Bpp = pScrn->bitsPerPixel >> 3;
     psav->cxMemory = psav->lDelta / (psav->Bpp);
     psav->cyMemory = psav->endfb / psav->lDelta - 1;
     /* ??????????? */
     if (psav->cyMemory > 2048)
         psav->cyMemory = 2048;
-        
+
     /*
      * If tiling, adjust down psav->cyMemory to the last multiple
      * of a tileheight, so that we don't try to use partial tiles.
@@ -283,7 +278,7 @@ SavageSetGBD(ScrnInfoPtr pScrn)
     if (psav->bTiled)  {
         psav->cyMemory -= (psav->cyMemory % 16);
     }
-    
+
     /*
      *  Initialization per GX-3.
      * 
@@ -346,11 +341,11 @@ void SavageSetGBD_Twister(ScrnInfoPtr pScrn)
 	tile16 = TILE_DESTINATION;
 	tile32 = TILE_DESTINATION;
     }
-    
+
     /* MM81C0 and 81C4 are used to control primary stream. */
     OUTREG32(PSTREAM_FBADDR0_REG,0x00000000);
     OUTREG32(PSTREAM_FBADDR1_REG,0x00000000);
-    
+
     /*
      *  Program Primary Stream Stride Register.
      *
@@ -446,13 +441,13 @@ void SavageSetGBD_Twister(ScrnInfoPtr pScrn)
     }
     else if (pScrn->bitsPerPixel == 16) {
 	psav->GlobalBD.bd1.HighPart.ResBWTile = tile16; /* 16 bpp/destination tiling format */
-        
+
         ulTmp = (((pScrn->virtualX + 0x3F) & 0x0000FFC0) >> 6) << 20;
         OUTREG32(TILED_SURFACE_REGISTER_0,ulTmp | TILED_SURF_BPP16);
     }
     else if (pScrn->bitsPerPixel == 32) {
         psav->GlobalBD.bd1.HighPart.ResBWTile = tile32; /* 32 bpp/destination tiling format */
-        
+
         ulTmp = ( ((pScrn->virtualX + 0x1F) & 0x0000FFE0) >> 5) << 20;
         OUTREG32(TILED_SURFACE_REGISTER_0,ulTmp | TILED_SURF_BPP32);
     }
@@ -462,7 +457,6 @@ void SavageSetGBD_Twister(ScrnInfoPtr pScrn)
     psav->GlobalBD.bd1.HighPart.Stride = (unsigned short) psav->lDelta / (pScrn->bitsPerPixel >> 3);
     psav->GlobalBD.bd1.HighPart.Bpp = (unsigned char) (pScrn->bitsPerPixel);
     psav->GlobalBD.bd1.Offset = pScrn->fbOffset;
-    
 
     /*
      * CR88, bit 4 - Block write enabled/disabled.
@@ -488,7 +482,7 @@ void SavageSetGBD_Twister(ScrnInfoPtr pScrn)
     OUTREG8(SEQ_ADDRESS_REG,0x01);
     byte = INREG8(SEQ_DATA_REG) & ~0x20;
     OUTREG8(SEQ_DATA_REG,byte);
-    
+
     /* program the GBD and SBD's */
     OUTREG32(S3_GLB_BD_LOW,psav->GlobalBD.bd2.LoPart);
     OUTREG32(S3_GLB_BD_HIGH,psav->GlobalBD.bd2.HiPart | bci_enable | S3_LITTLE_ENDIAN | S3_BD64);
@@ -508,11 +502,11 @@ void SavageSetGBD_3D(ScrnInfoPtr pScrn)
     bci_enable = BCI_ENABLE;
     tile16 = TILE_FORMAT_16BPP;
     tile32 = TILE_FORMAT_32BPP;
-    
+
     /* MM81C0 and 81C4 are used to control primary stream. */
     OUTREG32(PSTREAM_FBADDR0_REG,0x00000000);
     OUTREG32(PSTREAM_FBADDR1_REG,0x00000000);
-    
+
     /*
      *  Program Primary Stream Stride Register.
      *
@@ -598,13 +592,13 @@ void SavageSetGBD_3D(ScrnInfoPtr pScrn)
     }
     else if (pScrn->bitsPerPixel == 16) {
 	psav->GlobalBD.bd1.HighPart.ResBWTile = tile16; /* 16 bpp/destination tiling format */
-        
+
         ulTmp = (((pScrn->virtualX + 0x3F) & 0x0000FFC0) >> 6) << 24;
         OUTREG32(TILED_SURFACE_REGISTER_0,ulTmp | TILED_SURF_BPP16);
     }
     else if (pScrn->bitsPerPixel == 32) {
         psav->GlobalBD.bd1.HighPart.ResBWTile = tile32; /* 32 bpp/destination tiling format */
-        
+
         ulTmp = ( ((pScrn->virtualX + 0x1F) & 0x0000FFE0) >> 5) << 24;
         OUTREG32(TILED_SURFACE_REGISTER_0,ulTmp | TILED_SURF_BPP32);
     }
@@ -614,7 +608,6 @@ void SavageSetGBD_3D(ScrnInfoPtr pScrn)
     psav->GlobalBD.bd1.HighPart.Stride = (unsigned short) psav->lDelta / (pScrn->bitsPerPixel >> 3);
     psav->GlobalBD.bd1.HighPart.Bpp = (unsigned char) (pScrn->bitsPerPixel);
     psav->GlobalBD.bd1.Offset = pScrn->fbOffset;
-    
 
     /*
      * CR88, bit 4 - Block write enabled/disabled.
@@ -640,7 +633,7 @@ void SavageSetGBD_3D(ScrnInfoPtr pScrn)
     OUTREG8(SEQ_ADDRESS_REG,0x01);
     byte = INREG8(SEQ_DATA_REG) & ~0x20;
     OUTREG8(SEQ_DATA_REG,byte);
-    
+
     /* program the GBD and SBD's */
     OUTREG32(S3_GLB_BD_LOW,psav->GlobalBD.bd2.LoPart);
     OUTREG32(S3_GLB_BD_HIGH,psav->GlobalBD.bd2.HiPart | bci_enable | S3_LITTLE_ENDIAN | S3_BD64);
@@ -704,18 +697,6 @@ void SavageSetGBD_M7(ScrnInfoPtr pScrn)
     OUTREG8(CRT_ADDRESS_REG, MEMORY_CTRL0_REG);/* CRCA */
     byte =  INREG8(CRT_DATA_REG) & ~(MEM_PS1 + MEM_PS2) ;
     OUTREG8(CRT_DATA_REG,byte);
-#if 0
-    /*
-     * if we have 8MB of frame buffer here then we must really be a 16MB
-     * card and that means that the second device is always in the upper
-     * bank of memory (MHS)
-     */
-    if (psav->videoRambytes >= 0x800000) {
-        /* 16MB Video Memory cursor is at the end in Bank 1 */
-        byte |= 0x3;
-        OUTREG16(CRT_ADDRESS_REG, (byte << 8) | MEMORY_CTRL0_REG);
-    }
-#endif
 
     /* MM81C0 and 81C4 are used to control primary stream. */
     if (psav->IsPrimary) {
@@ -802,7 +783,7 @@ void SavageSetGBD_M7(ScrnInfoPtr pScrn)
 
     if (!psav->IsSecondary)
     	OUTREG32(S3_BCI_GLB_BD_HIGH, bci_enable | S3_LITTLE_ENDIAN | S3_BD64);
-    
+
     /* CR50, bit 7,6,0 = 111, Use GBD.*/
     OUTREG8(CRT_ADDRESS_REG,0x50);
     byte = INREG8(CRT_DATA_REG) | 0xC1;
@@ -816,10 +797,9 @@ void SavageSetGBD_M7(ScrnInfoPtr pScrn)
      *            write should only be enabled for certain types of SGRAM.
      */
     OUTREG8(CRT_ADDRESS_REG,0x78);
-    /*byte = INREG8(CRT_DATA_REG) & ~0x0C;*/
     byte = INREG8(CRT_DATA_REG) | 0xfb;
     OUTREG8(CRT_DATA_REG,byte);
-    
+
     /*
      * Tiled Surface 0 Registers MM48C40:
      *  bit 0~23: tile surface 0 frame buffer offset
@@ -868,7 +848,7 @@ void SavageSetGBD_M7(ScrnInfoPtr pScrn)
 	else 
             OUTREG32(TILED_SURFACE_REGISTER_0,ulTmp | TILED_SURF_BPP32 | pScrn->fbOffset);
     }
-    
+
     psav->GlobalBD.bd1.HighPart.ResBWTile |= 0x10;/* disable block write */
     /* HW uses width */
     psav->GlobalBD.bd1.HighPart.Stride = (unsigned short)(psav->lDelta / (pScrn->bitsPerPixel >> 3));
@@ -881,11 +861,6 @@ void SavageSetGBD_M7(ScrnInfoPtr pScrn)
      *       bit 0 = 1, Enable 8 Mbytes of display memory thru 64K window
      *                  at A000:0.
      */
-#if 0
-    OUTREG8(CRT_ADDRESS_REG,MEMORY_CONFIG_REG); /* cr31 */
-    byte = INREG8(CRT_DATA_REG) & (~(ENABLE_CPUA_BASE_A0000));
-    OUTREG8(CRT_DATA_REG,byte);
-#endif
     OUTREG8(CRT_ADDRESS_REG,MEMORY_CONFIG_REG); /* cr31 */
     byte = (INREG8(CRT_DATA_REG) | 0x04) & 0xFE;
     OUTREG8(CRT_DATA_REG,byte);
@@ -907,22 +882,20 @@ void SavageSetGBD_M7(ScrnInfoPtr pScrn)
     byte = INREG8(SEQ_DATA_REG) & ~0X20;
     OUTREG8(SEQ_DATA_REG,byte);
 }
-                       
+
 void SavageSetGBD_PM(ScrnInfoPtr pScrn)
 {
     SavagePtr psav = SAVPTR(pScrn);
     unsigned long ulTmp;
     unsigned char byte;
     int bci_enable, tile16, tile32;
-    
 
     bci_enable = BCI_ENABLE_TWISTER;
     tile16 = TILE_DESTINATION;
     tile32 = TILE_DESTINATION;
 
-
     /* following is the enable case */
-             
+
     /* SR01:turn off screen */
     OUTREG8 (SEQ_ADDRESS_REG,0x01);
     byte = INREG8(SEQ_DATA_REG) | 0x20;
@@ -946,7 +919,7 @@ void SavageSetGBD_PM(ScrnInfoPtr pScrn)
     	OUTREG8(CRT_ADDRESS_REG,0x67); 
     	byte =  INREG8(CRT_DATA_REG) | 0x08;
     	OUTREG8(CRT_DATA_REG,byte);
-    
+
     	OUTREG16(SEQ_ADDRESS_REG,SELECT_IGA1);
     } else {
     	OUTREG8(CRT_ADDRESS_REG,0x67); 
@@ -958,7 +931,7 @@ void SavageSetGBD_PM(ScrnInfoPtr pScrn)
     	OUTREG8(CRT_ADDRESS_REG,0x67); 
     	byte =  INREG8(CRT_DATA_REG) | 0x08;
     	OUTREG8(CRT_DATA_REG,byte);
-    
+
     	OUTREG16(SEQ_ADDRESS_REG,SELECT_IGA1);
     }
 
@@ -969,7 +942,7 @@ void SavageSetGBD_PM(ScrnInfoPtr pScrn)
     OUTREG8(CRT_ADDRESS_REG,0x65); 
     byte =  INREG8(CRT_DATA_REG) | 0x03;
     OUTREG8(CRT_DATA_REG,byte);
-    
+
     /*
      *  Program Primary Stream Stride Register.
      *
@@ -1034,7 +1007,7 @@ void SavageSetGBD_PM(ScrnInfoPtr pScrn)
                  | 0xC0000000 | (psav->lDelta & 0x00001fff));
 	}
     }
-    
+
     /* MM81C0 and 81C4 are used to control primary stream. */
     if (psav->IsPrimary) {
         OUTREG32(PRI_STREAM_FBUF_ADDR0,pScrn->fbOffset);
@@ -1048,14 +1021,14 @@ void SavageSetGBD_PM(ScrnInfoPtr pScrn)
         OUTREG32(PRI_STREAM2_FBUF_ADDR0,(pScrn->fbOffset & 0xfffffffc) | 0x80000000);
         OUTREG32(PRI_STREAM2_FBUF_ADDR1,pScrn->fbOffset & 0xffffffc);
     }
-    
+
     OUTREG32(0x8128, 0xFFFFFFFFL);
     OUTREG32(0x812C, 0xFFFFFFFFL);
-    
+
     if (!psav->IsSecondary)
     	/* bit 28:block write disable */
     	OUTREG32(S3_GLB_BD_HIGH, bci_enable | S3_BD64 | 0x10000000); 
-    
+
     /* CR50, bit 7,6,0 = 111, Use GBD.*/
     OUTREG8(CRT_ADDRESS_REG,0x50);
     byte = INREG8(CRT_DATA_REG) | 0xC1;
@@ -1068,11 +1041,10 @@ void SavageSetGBD_PM(ScrnInfoPtr pScrn)
          *  type of SGRAM for which block_write can be used.
          */
         psav->GlobalBD.bd1.HighPart.ResBWTile = TILE_FORMAT_LINEAR;/* linear */
-        
     }
     else if (pScrn->bitsPerPixel == 16) {
         psav->GlobalBD.bd1.HighPart.ResBWTile = tile16;/* tile format destination */
-        
+
         ulTmp =  (((pScrn->virtualX + 0x3f) & 0x0000ffc0) >> 6) << 20;
 	if (psav->IsSecondary)
             OUTREG32(TILED_SURFACE_REGISTER_1,ulTmp | TILED_SURF_BPP16 | (pScrn->fbOffset>>6));
@@ -1088,7 +1060,7 @@ void SavageSetGBD_PM(ScrnInfoPtr pScrn)
 	else 
             OUTREG32(TILED_SURFACE_REGISTER_0,ulTmp | TILED_SURF_BPP32 | (pScrn->fbOffset>>6));
     }
-    
+
     psav->GlobalBD.bd1.HighPart.ResBWTile |= 0x10;/* disable block write */
     /* HW uses width */
     psav->GlobalBD.bd1.HighPart.Stride = (unsigned short)(psav->lDelta / (pScrn->bitsPerPixel >> 3));
@@ -1103,7 +1075,7 @@ void SavageSetGBD_PM(ScrnInfoPtr pScrn)
     OUTREG8(CRT_ADDRESS_REG,MEMORY_CONFIG_REG);
     byte = INREG8(CRT_DATA_REG) & (~(ENABLE_CPUA_BASE_A0000));
     OUTREG8(CRT_DATA_REG,byte);
-    
+
     if (!psav->IsSecondary) {
     	/* program the GBD and SBDs */
     	OUTREG32(S3_GLB_BD_LOW,psav->GlobalBD.bd2.LoPart );
@@ -1127,7 +1099,7 @@ void SavageSetGBD_2000(ScrnInfoPtr pScrn)
     unsigned long ulTmp, ulYRange;
     unsigned char byte;
     int bci_enable, tile16, tile32;
-    
+
     bci_enable = BCI_ENABLE_TWISTER;
     tile16 = TILE_DESTINATION;
     tile32 = TILE_DESTINATION;
@@ -1137,19 +1109,16 @@ void SavageSetGBD_2000(ScrnInfoPtr pScrn)
     else
       ulYRange = 0x20000000;
 
-
     /* following is the enable case */
-             
+
     /* SR01:turn off screen */
     OUTREG8 (SEQ_ADDRESS_REG,0x01);
     byte = INREG8(SEQ_DATA_REG) | 0x20;
     OUTREG8(SEQ_DATA_REG,byte);
 
-
     /* MM81C0 and 81B0 are used to control primary stream. */
     OUTREG32(PRI_STREAM_FBUF_ADDR0, pScrn->fbOffset);
     OUTREG32(PRI_STREAM2_FBUF_ADDR0, pScrn->fbOffset);
-
 
     /*
      *  Program Primary Stream Stride Register.
@@ -1185,13 +1154,12 @@ void SavageSetGBD_2000(ScrnInfoPtr pScrn)
     byte =  INREG8(CRT_DATA_REG) | 0x08;
     OUTREG8(CRT_DATA_REG,byte);
 
-    
     OUTREG32(0x8128, 0xFFFFFFFFL);
     OUTREG32(0x812C, 0xFFFFFFFFL);
-    
+
     /* bit 28:block write disable */
     OUTREG32(S3_GLB_BD_HIGH, bci_enable | S3_BD64 | 0x10000000); 
-    
+
     /* CR50, bit 7,6,0 = 111, Use GBD.*/
     OUTREG8(CRT_ADDRESS_REG,0x50);
     byte = INREG8(CRT_DATA_REG) | 0xC1;
@@ -1209,7 +1177,6 @@ void SavageSetGBD_2000(ScrnInfoPtr pScrn)
          *  type of SGRAM for which block_write can be used.
          */
         psav->GlobalBD.bd1.HighPart.ResBWTile = TILE_FORMAT_LINEAR;/* linear */
-        
     }
     else if (pScrn->bitsPerPixel == 16) {
         psav->GlobalBD.bd1.HighPart.ResBWTile = tile16;/* tile format destination */
@@ -1227,7 +1194,7 @@ void SavageSetGBD_2000(ScrnInfoPtr pScrn)
         OUTREG32(PRI_STREAM_STRIDE, ((ulTmp >> 19) & 0x03f0) | 0x80000000);
         OUTREG32(PRI_STREAM2_STRIDE, ((ulTmp >> 19) & 0x03f0) | 0x80000000);
     }
-    
+
     psav->GlobalBD.bd1.HighPart.ResBWTile |= 0x10;/* disable block write */
     /* HW uses width */
     psav->GlobalBD.bd1.HighPart.Stride = (unsigned short)(psav->lDelta / (pScrn->bitsPerPixel >> 3));
@@ -1242,7 +1209,7 @@ void SavageSetGBD_2000(ScrnInfoPtr pScrn)
     OUTREG8(CRT_ADDRESS_REG,MEMORY_CONFIG_REG);
     byte = INREG8(CRT_DATA_REG) & (~(ENABLE_CPUA_BASE_A0000));
     OUTREG8(CRT_DATA_REG,byte);
-    
+
     /* program the GBD and SBDs */
     OUTREG32(S3_GLB_BD_LOW,psav->GlobalBD.bd2.LoPart );
     OUTREG32(S3_GLB_BD_HIGH,(psav->GlobalBD.bd2.HiPart 
@@ -1257,18 +1224,6 @@ void SavageSetGBD_2000(ScrnInfoPtr pScrn)
     byte = INREG8(SEQ_DATA_REG) & ~0x20;
     OUTREG8(SEQ_DATA_REG,byte);
 }
-
-#if 0
-static
-void SavageRestoreAccelState(ScrnInfoPtr pScrn)
-{
-    SavagePtr psav = SAVPTR(pScrn);
-
-    psav->WaitIdleEmpty(psav);
-
-    return;
-}
-#endif
 
 /* Acceleration init function, sets up pointers to our accelerated functions */
 
@@ -1290,7 +1245,7 @@ SavageInitAccel(ScreenPtr pScreen)
         pSAVAGEDRIServer->frontbufferSize = bufferSize;
         tiledwidthBytes = psav->lDelta;
 	tiledWidth = tiledwidthBytes / cpp;
-        
+
         if (cpp == 2) {
             tiledBufferSize = ((pScrn->virtualX+63)/64)*((pScrn->virtualY+15)/16)
                 *2048;
@@ -1298,13 +1253,8 @@ SavageInitAccel(ScreenPtr pScreen)
             tiledBufferSize = ((pScrn->virtualX+31)/32)*((pScrn->virtualY+15)/16)
                 *2048;
         }
-        /*set Depth buffer to 32bpp*/
-        /*tiledwidthBytes_Z = ((pScrn->virtualX + 31)& ~0x0000001F)*4;
-          tiledBufferSize_Z = ((pScrn->virtualX+31)/32)*((pScrn->virtualY+15)/16)
-          *2048;*/
 
         pSAVAGEDRIServer->backbufferSize = tiledBufferSize;
-        /*pSAVAGEDRIServer->depthbufferSize = tiledBufferSize_Z;*/
         pSAVAGEDRIServer->depthbufferSize = tiledBufferSize;
 
         xf86DrvMsg(pScrn->scrnIndex,X_INFO,
@@ -1327,10 +1277,6 @@ SavageInitAccel(ScreenPtr pScreen)
          * pixmap cache.  Should be enough for a fullscreen background
          * image plus some leftovers.
          */
-        /*     pSAVAGEDRIServer->textureSize = psav->videoRambytes -
-               tiledBufferSize -
-               tiledBufferSize_Z -
-               -0x602000;*/
         pSAVAGEDRIServer->textureSize = psav->videoRambytes -
             4096 - /* hw cursor*/
             psav->cobSize - /*COB*/
@@ -1347,27 +1293,6 @@ SavageInitAccel(ScreenPtr pScreen)
                     "textureSize:0x%08x \n",
                     pSAVAGEDRIServer->textureSize);
 
-        /* If that gives us less than half the available memory, let's
-         * be greedy and grab some more.  Sorry, I care more about 3D
-         * performance than playing nicely, and you'll get around a full
-         * framebuffer's worth of pixmap cache anyway.
-         */
-#if 0
-        if ( pSAVAGEDRIServer->textureSize < (int)psav->FbMapSize / 2 ) {
-            pSAVAGEDRIServer->textureSize = psav->FbMapSize - 4 * bufferSize;
-        }
-#endif
-        /* Check to see if there is more room available after the maximum
-         * scanline for textures.
-         */
-#if 0
-        if ( (int)psav->FbMapSize - maxlines * widthBytes - bufferSize * 2
-             > pSAVAGEDRIServer->textureSize ) {
-            pSAVAGEDRIServer->textureSize = (psav->FbMapSize -
-                                             maxlines * widthBytes -
-                                             bufferSize * 2);
-        }
-#endif
         /* Set a minimum usable local texture heap size.  This will fit
          * two 256x256x32bpp textures.
          */
@@ -1381,7 +1306,6 @@ SavageInitAccel(ScreenPtr pScreen)
                     pSAVAGEDRIServer->textureSize);
 
         /* Reserve space for textures */
-        /*       if (pSAVAGEDRIServer->textureSize)*/
         pSAVAGEDRIServer->textureOffset = (psav->videoRambytes -
                                            4096 - /* hw cursor*/
                                            psav->cobSize - /*COB*/
@@ -1392,12 +1316,8 @@ SavageInitAccel(ScreenPtr pScreen)
                     pSAVAGEDRIServer->textureOffset);
 
         /* Reserve space for the shared depth buffer */
-        /*pSAVAGEDRIServer->depthOffset = (pSAVAGEDRIServer->textureOffset -
-          tiledBufferSize_Z + SAVAGE_BUFFER_ALIGN) &  ~SAVAGE_BUFFER_ALIGN;
-        */
         pSAVAGEDRIServer->depthOffset = (pSAVAGEDRIServer->textureOffset -
                                          tiledBufferSize) & ~SAVAGE_BUFFER_ALIGN;
-        /*pSAVAGEDRIServer->depthPitch = tiledwidthBytes_Z;*/
         pSAVAGEDRIServer->depthPitch = tiledwidthBytes;
 
         xf86DrvMsg( pScrn->scrnIndex, X_INFO,
@@ -1452,8 +1372,6 @@ SavageInitAccel(ScreenPtr pScreen)
 		tiledWidth;
 	}
 
-        /*scanlines = pSAVAGEDRIServer->backOffset / widthBytes - 1;*/
-        /*if ( scanlines > maxlines ) scanlines = maxlines;*/
         /* CR47983, XvMC do not work on system with frame buffer less than 32MB.
          * VBE reports frame buffer size a little less than 16MB, this makes the condition
          *   turns out FALSE.
@@ -1483,13 +1401,6 @@ SavageInitAccel(ScreenPtr pScreen)
          * hwmc used xserver's memory, now xserver will get less memory.
          * Both 3D and hwmc's memory usage are considered now.
          */  
-#if 0
-        if (pSAVAGEDRIServer->backOffset < psav->hwmcOffset )
-            psav->cyMemory = pSAVAGEDRIServer->backOffset / widthBytes - 1;
-        else
-            psav->cyMemory = psav->hwmcOffset / widthBytes -1;
-#endif
-
         psav->cyMemory = pSAVAGEDRIServer->backOffset / widthBytes - 1;
         if (psav->cyMemory > 0x7FFF) {
             psav->cyMemory = 0x7FFF;
@@ -1540,7 +1451,6 @@ SavageInitAccel(ScreenPtr pScreen)
 }
 
 int SavageGetCopyROP(int rop) {
-
     int ALUCopyROP[16] =
     {
        0x00, /*ROP_0 GXclear */
@@ -1562,7 +1472,6 @@ int SavageGetCopyROP(int rop) {
     };
 
     return (ALUCopyROP[rop]);
-
 }
 
 /* The sync function for the GE */

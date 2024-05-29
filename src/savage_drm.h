@@ -191,13 +191,6 @@ typedef struct drm_savage_init {
 	unsigned long fb_offset;
 	unsigned long mmio_offset;
 	unsigned long status_offset;
-#if 0
-/*============================================================*/
-	unsigned long warp_offset;
-	unsigned long primary_offset;
-	unsigned long buffers_offset;
-/*============================================================*/
-#endif /*end #if 0 */
 } drm_savage_init_t;
 
 typedef struct drm_savage_fullscreen {
