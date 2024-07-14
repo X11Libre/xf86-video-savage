@@ -360,8 +360,8 @@ SavageGetBIOSModes(
 			{
 			    s3vModeTable->RefreshRate = (unsigned char *)
 				calloc( 
-				    sizeof(unsigned char),
-				    (iRefresh+8)
+				    (iRefresh+8),
+				    sizeof(unsigned char)
 				);
 			}
 		    }

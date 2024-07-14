@@ -648,7 +648,7 @@ Bool SAVAGEDRIScreenInit( ScreenPtr pScreen )
 
    pDRIInfo->SAREASize = SAREA_MAX;
 
-   pSAVAGEDRI = (SAVAGEDRIPtr)calloc( sizeof(SAVAGEDRIRec), 1 );
+   pSAVAGEDRI = (SAVAGEDRIPtr)calloc( 1, sizeof(SAVAGEDRIRec) );
    if ( !pSAVAGEDRI ) {
       DRIDestroyInfoRec( psav->pDRIInfo );
       psav->pDRIInfo = 0;
@@ -658,7 +658,7 @@ Bool SAVAGEDRIScreenInit( ScreenPtr pScreen )
    }
 
    pSAVAGEDRIServer = (SAVAGEDRIServerPrivatePtr)
-      calloc( sizeof(SAVAGEDRIServerPrivateRec), 1 );
+      calloc( 1, sizeof(SAVAGEDRIServerPrivateRec) );
    if ( !pSAVAGEDRIServer ) {
       free( pSAVAGEDRI );
       DRIDestroyInfoRec( psav->pDRIInfo );
