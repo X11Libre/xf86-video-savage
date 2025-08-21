@@ -59,11 +59,11 @@ SavageI2CGetBits(I2CBusPtr b, int *clock, int *data)
 
     *clock = reg & 0x4;
     *data = reg & 0x8;
-    
+
     /*ErrorF("SavageI2CGetBits: %d %d\n", *clock, *data); */
 }
 
-Bool 
+Bool
 SavageI2CInit(ScrnInfoPtr pScrn)
 {
     SavagePtr psav = SAVPTR(pScrn);

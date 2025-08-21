@@ -1,8 +1,8 @@
 /*
- * The exa accel file for the Savage driver.  
- * 
+ * The exa accel file for the Savage driver.
+ *
  * Created 2005-2006 by Alex Deucher
- * Revision: 
+ * Revision:
  *
  */
 
@@ -74,7 +74,7 @@ static int SavageGetSolidROP(int rop) {
     return (ALUSolidROP[rop]);
 }
 
-Bool 
+Bool
 SavageEXAInit(ScreenPtr pScreen)
 {
     ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
@@ -97,10 +97,10 @@ SavageEXAInit(ScreenPtr pScreen)
 
     if (psav->bTiled) {
         if (pScrn->bitsPerPixel == 16) {
-            psav->EXADriverPtr->offScreenBase = 
+            psav->EXADriverPtr->offScreenBase =
 		((pScrn->virtualX+63)/64)*((pScrn->virtualY+15)/16) * 2048;
         } else {
-            psav->EXADriverPtr->offScreenBase = 
+            psav->EXADriverPtr->offScreenBase =
 		((pScrn->virtualX+31)/32)*((pScrn->virtualY+15)/16) * 2048;
 	}
     } else {
@@ -381,14 +381,14 @@ SavageUploadToScreen(PixmapPtr pDst, int x, int y, int w, int h, char *src, int 
 
 #ifdef SAVAGEDRI
     /* Test for conditions for AGP Mastered Image Transfer (MIT). AGP memory
-       needs to be available, the XVideo AGP needs to be enabled, the 
+       needs to be available, the XVideo AGP needs to be enabled, the
        framebuffer destination must be a multiple of 32 bytes, and the source
-       pitch must span the entirety of the destination pitch. This last 
-       condition allows the code to consider this upload as equivalent to a 
+       pitch must span the entirety of the destination pitch. This last
+       condition allows the code to consider this upload as equivalent to a
        plain memcpy() call. */
     dst_pitch = exaGetPixmapPitch(pDst);
     dst_yoffset = exaGetPixmapOffset(pDst) + y * dst_pitch;
-    agp_possible = 
+    agp_possible =
         (!psav->IsPCI && psav->drmFD > 0 && psav->DRIServerInfo != NULL &&
         psav->DRIServerInfo->agpXVideo.size > 0 &&
         x == 0 && src_pitch == dst_pitch && w * Bpp == dst_pitch &&
@@ -396,7 +396,7 @@ SavageUploadToScreen(PixmapPtr pDst, int x, int y, int w, int h, char *src, int 
 
     if (agp_possible) {
       	SAVAGEDRIServerPrivatePtr pSAVAGEDRIServer = psav->DRIServerInfo;
-        if (pSAVAGEDRIServer->agpXVideo.map != NULL || 
+        if (pSAVAGEDRIServer->agpXVideo.map != NULL ||
             0 <= drmMap( psav->drmFD,
 		pSAVAGEDRIServer->agpXVideo.handle,
 		pSAVAGEDRIServer->agpXVideo.size,
@@ -404,12 +404,12 @@ SavageUploadToScreen(PixmapPtr pDst, int x, int y, int w, int h, char *src, int 
 
             unsigned char * agpMap = pSAVAGEDRIServer->agpXVideo.map;
             unsigned int agpOffset = drmAgpBase(psav->drmFD) + pSAVAGEDRIServer->agpXVideo.offset;
-            unsigned int bytesTotal = dst_pitch * h;            
+            unsigned int bytesTotal = dst_pitch * h;
 
             while (bytesTotal > 0) {
-                unsigned int bytesTransfer = 
-                    (bytesTotal > pSAVAGEDRIServer->agpXVideo.size) 
-                    ? pSAVAGEDRIServer->agpXVideo.size 
+                unsigned int bytesTransfer =
+                    (bytesTotal > pSAVAGEDRIServer->agpXVideo.size)
+                    ? pSAVAGEDRIServer->agpXVideo.size
                     : bytesTotal;
                 unsigned int qwordsTransfer = bytesTransfer >> 3;
 
@@ -424,7 +424,7 @@ SavageUploadToScreen(PixmapPtr pDst, int x, int y, int w, int h, char *src, int 
                 BCI_SEND(BCI_SET_REGISTER | BCI_SET_REGISTER_COUNT(1) | 0x50);
                 BCI_SEND(0x00000002 | ((qwordsTransfer - 1) << 3)); /* Select MIT, sysmem to framebuffer */
 
-                /* I want to wait here for any reads from AGP memory and any 
+                /* I want to wait here for any reads from AGP memory and any
                    framebuffer writes performed by the MIT to stop. */
                 BCI_SEND(0xC0000000 | ((0x08 | 0x01) << 16));
 

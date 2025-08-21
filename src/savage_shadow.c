@@ -1,6 +1,6 @@
 
 /*
-   Copyright (c) 1999,2000  The XFree86 Project Inc. 
+   Copyright (c) 1999,2000  The XFree86 Project Inc.
    based on code written by Mark Vojkovich <markv@valinux.com>
 */
 
@@ -19,14 +19,14 @@ SavageRefreshArea(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
     SavagePtr psav = SAVPTR(pScrn);
     int width, height, Bpp, FBPitch;
     unsigned char *src, *dst;
-   
+
     Bpp = pScrn->bitsPerPixel >> 3;
     FBPitch = BitmapBytePad(pScrn->displayWidth * pScrn->bitsPerPixel);
 
     while(num--) {
 	width = (pbox->x2 - pbox->x1) * Bpp;
 	height = pbox->y2 - pbox->y1;
-	src = psav->ShadowPtr + (pbox->y1 * psav->ShadowPitch) + 
+	src = psav->ShadowPtr + (pbox->y1 * psav->ShadowPitch) +
 						(pbox->x1 * Bpp);
 	dst = psav->FBStart + (pbox->y1 * FBPitch) + (pbox->x1 * Bpp);
 
@@ -35,10 +35,10 @@ SavageRefreshArea(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 	    dst += FBPitch;
 	    src += psav->ShadowPitch;
 	}
-	
+
 	pbox++;
     }
-} 
+}
 
 
 void
@@ -76,11 +76,11 @@ SavageRefreshArea8(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 	height = (y2 - y1) >> 2;  /* in dwords */
 
 	if(psav->rotate == 1) {
-	    dstPtr = psav->FBStart + 
+	    dstPtr = psav->FBStart +
 			(pbox->x1 * dstPitch) + pScrn->virtualX - y2;
 	    srcPtr = psav->ShadowPtr + ((1 - y2) * srcPitch) + pbox->x1;
 	} else {
-	    dstPtr = psav->FBStart + 
+	    dstPtr = psav->FBStart +
 			((pScrn->virtualY - pbox->x2) * dstPitch) + y1;
 	    srcPtr = psav->ShadowPtr + (y1 * srcPitch) + pbox->x2 - 1;
 	}
@@ -90,8 +90,8 @@ SavageRefreshArea8(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 	    dst = (CARD32*)dstPtr;
 	    count = height;
 	    while(count--) {
-		*(dst++) = src[0] | (src[srcPitch] << 8) | 
-					(src[srcPitch * 2] << 16) | 
+		*(dst++) = src[0] | (src[srcPitch] << 8) |
+					(src[srcPitch * 2] << 16) |
 					(src[srcPitch * 3] << 24);
 		src += srcPitch * 4;
 	    }
@@ -101,7 +101,7 @@ SavageRefreshArea8(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 
 	pbox++;
     }
-} 
+}
 
 
 void
@@ -122,14 +122,14 @@ SavageRefreshArea16(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 	height = (y2 - y1) >> 1;  /* in dwords */
 
 	if(psav->rotate == 1) {
-	    dstPtr = (CARD16*)psav->FBStart + 
+	    dstPtr = (CARD16*)psav->FBStart +
 			(pbox->x1 * dstPitch) + pScrn->virtualX - y2;
-	    srcPtr = (CARD16*)psav->ShadowPtr + 
+	    srcPtr = (CARD16*)psav->ShadowPtr +
 			((1 - y2) * srcPitch) + pbox->x1;
 	} else {
-	    dstPtr = (CARD16*)psav->FBStart + 
+	    dstPtr = (CARD16*)psav->FBStart +
 			((pScrn->virtualY - pbox->x2) * dstPitch) + y1;
-	    srcPtr = (CARD16*)psav->ShadowPtr + 
+	    srcPtr = (CARD16*)psav->ShadowPtr +
 			(y1 * srcPitch) + pbox->x2 - 1;
 	}
 
@@ -169,11 +169,11 @@ SavageRefreshArea24(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
         height = (y2 - y1) >> 2;  /* blocks of 3 dwords */
 
 	if(psav->rotate == 1) {
-	    dstPtr = psav->FBStart + 
+	    dstPtr = psav->FBStart +
 			(pbox->x1 * dstPitch) + ((pScrn->virtualX - y2) * 3);
 	    srcPtr = psav->ShadowPtr + ((1 - y2) * srcPitch) + (pbox->x1 * 3);
 	} else {
-	    dstPtr = psav->FBStart + 
+	    dstPtr = psav->FBStart +
 			((pScrn->virtualY - pbox->x2) * dstPitch) + (y1 * 3);
 	    srcPtr = psav->ShadowPtr + (y1 * srcPitch) + (pbox->x2 * 3) - 3;
 	}
@@ -184,18 +184,18 @@ SavageRefreshArea24(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 	    count = height;
 	    while(count--) {
 		dst[0] = src[0] | (src[1] << 8) | (src[2] << 16) |
-				(src[srcPitch] << 24);		
+				(src[srcPitch] << 24);
 		dst[1] = src[srcPitch + 1] | (src[srcPitch + 2] << 8) |
 				(src[srcPitch * 2] << 16) |
-				(src[(srcPitch * 2) + 1] << 24);		
+				(src[(srcPitch * 2) + 1] << 24);
 		dst[2] = src[(srcPitch * 2) + 2] | (src[srcPitch * 3] << 8) |
 				(src[(srcPitch * 3) + 1] << 16) |
-				(src[(srcPitch * 3) + 2] << 24);	
+				(src[(srcPitch * 3) + 2] << 24);
 		dst += 3;
 		src += srcPitch * 4;
 	    }
 	    srcPtr += psav->rotate * 3;
-	    dstPtr += dstPitch; 
+	    dstPtr += dstPitch;
 	}
 
 	pbox++;
@@ -217,14 +217,14 @@ SavageRefreshArea32(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 	height = pbox->y2 - pbox->y1;
 
 	if(psav->rotate == 1) {
-	    dstPtr = (CARD32*)psav->FBStart + 
+	    dstPtr = (CARD32*)psav->FBStart +
 			(pbox->x1 * dstPitch) + pScrn->virtualX - pbox->y2;
-	    srcPtr = (CARD32*)psav->ShadowPtr + 
+	    srcPtr = (CARD32*)psav->ShadowPtr +
 			((1 - pbox->y2) * srcPitch) + pbox->x1;
 	} else {
-	    dstPtr = (CARD32*)psav->FBStart + 
+	    dstPtr = (CARD32*)psav->FBStart +
 			((pScrn->virtualY - pbox->x2) * dstPitch) + pbox->y1;
-	    srcPtr = (CARD32*)psav->ShadowPtr + 
+	    srcPtr = (CARD32*)psav->ShadowPtr +
 			(pbox->y1 * srcPitch) + pbox->x2 - 1;
 	}
 

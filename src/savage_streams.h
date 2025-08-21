@@ -78,12 +78,12 @@
 #define H_Mask                  (((1L << 11) - 1) << H_Shift)
 #define W_Shift                 16
 #define W_Mask                  (((1L << 11) - 1) << W_Shift)
-                                                                                                                    
+
 #define Y_Shift                 0
 #define Y_Mask                  (((1L << 11) - 1) << Y_Shift)
 #define X_Shift                 16
 #define X_Mask                  (((1L << 11) - 1) << X_Shift)
-                                                                                                                    
+
 #define XY(x,y)      ((((x+1)<<X_Shift)&X_Mask) | (((y+1)<<Y_Shift)&Y_Mask))
 #define WH(w,h)      ((((w-1)<<W_Shift)&W_Mask) | (((h)<<H_Shift)&H_Mask))
 
@@ -92,7 +92,7 @@
 #define HSCALING(w0,w1)   ((((unsigned int)(((double)w0/(double)w1) * (1 << 15))) \
                                << HSCALING_Shift) \
                            & HSCALING_Mask)
-                                                                                                                    
+
 #define VSCALING_Shift    0
 #define VSCALING_Mask     (((1L << 20)-1) << VSCALING_Shift)
 #define VSCALING(h0,h1)   ((((unsigned int) (((double)h0/(double)h1) * (1 << 15))) \

@@ -109,7 +109,7 @@ typedef struct _server{
    unsigned int frontPitch;
    unsigned int frontbufferSize;
    unsigned int frontBitmapDesc;
-   
+
    unsigned int backOffset;
    unsigned int backPitch;
    unsigned int backbufferSize;
@@ -161,13 +161,13 @@ typedef struct
     Bool TvOn;
     ScrnInfoPtr pSecondaryScrn;
     ScrnInfoPtr pPrimaryScrn;
-  
+
 } SavageEntRec, *SavageEntPtr;
 
 #define VGAIN8(addr) MMIO_IN8(psav->MapBase+0x8000, addr)
 #define VGAIN16(addr) MMIO_IN16(psav->MapBase+0x8000, addr)
 #define VGAIN(addr) MMIO_IN32(psav->MapBase+0x8000, addr)
- 
+
 #define VGAOUT8(addr,val) MMIO_OUT8(psav->MapBase+0x8000, addr, val)
 #define VGAOUT16(addr,val) MMIO_OUT16(psav->MapBase+0x8000, addr, val)
 #define VGAOUT(addr,val) MMIO_OUT32(psav->MapBase+0x8000, addr, val)
@@ -178,8 +178,8 @@ typedef struct
 #define OUTREG8(addr,val) MMIO_OUT8(psav->MapBase, addr, val)
 #define OUTREG16(addr,val) MMIO_OUT16(psav->MapBase, addr, val)
 #define OUTREG32(addr,val) MMIO_OUT32(psav->MapBase, addr, val)
-#define INREG(addr) INREG32(addr) 
-#define OUTREG(addr,val) OUTREG32(addr,val) 
+#define INREG(addr) INREG32(addr)
+#define OUTREG(addr,val) OUTREG32(addr,val)
 
 #if X_BYTE_ORDER == X_LITTLE_ENDIAN
 #define B_O16(x)  (x)
@@ -280,9 +280,9 @@ typedef union _BMPDESC {
 
 typedef struct _StatInfo {
     int     origMode;
-    int     pageCnt;    
+    int     pageCnt;
     pointer statBuf;
-    int     realSeg;    
+    int     realSeg;
     int     realOff;
 } StatInfoRec,*StatInfoPtr;
 
@@ -516,7 +516,7 @@ typedef struct _Savage {
     SavageMonitorType   DisplayType;
     /* DuoView stuff */
     Bool		HasCRTC2;     /* MX, IX, Supersavage */
-    Bool		IsSecondary;  /* second Screen */	
+    Bool		IsSecondary;  /* second Screen */
     Bool		IsPrimary;  /* first Screen */
     EntityInfoPtr       pEnt;
 
@@ -608,7 +608,7 @@ SavageModeTablePtr SavageGetBIOSModeTable( SavagePtr psav, int iDepth );
 ModeStatus SavageMatchBiosMode(ScrnInfoPtr pScrn,int width,int height,int refresh,
                               unsigned int *vesaMode,unsigned int *newRefresh);
 
-unsigned short SavageGetBIOSModes( 
+unsigned short SavageGetBIOSModes(
     SavagePtr psav,
     VbeInfoBlock *vbe,
     int iDepth,

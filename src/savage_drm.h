@@ -115,9 +115,9 @@ typedef struct _drm_savage_sarea {
 	 */
 	unsigned int setup[28];    /* 3D context registers */
    	drm_savage_server_regs_t server_state;
- 
+
    	unsigned int dirty;
-   	
+
    	unsigned int vertsize;   /* vertext  size */
 
 	/* The current cliprects, or a subset thereof.

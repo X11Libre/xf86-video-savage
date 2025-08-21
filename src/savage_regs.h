@@ -24,7 +24,7 @@
 #define S3_MOBILE_TWISTER_SERIES(chip)   ((chip==S3_TWISTER)    \
                                           ||(chip==S3_PROSAVAGEDDR))
 
-/* Chip tags.  These are used to group the adapters into 
+/* Chip tags.  These are used to group the adapters into
  * related families.
  */
 
@@ -45,18 +45,18 @@ enum S3CHIPTAGS {
 #define BIOS_BASE			0xc0000
 
 #define SAVAGE_NEWMMIO_REGBASE_S3	0x1000000  /* 16MB */
-#define SAVAGE_NEWMMIO_REGBASE_S4	0x0000000 
+#define SAVAGE_NEWMMIO_REGBASE_S4	0x0000000
 #define SAVAGE_NEWMMIO_REGSIZE		0x0080000	/* 512kb */
 #define SAVAGE_NEWMMIO_VGABASE		0x8000
 
-#define BASE_FREQ			14.31818	
+#define BASE_FREQ			14.31818
 
 #define FIFO_CONTROL_REG		0x8200
 #define MIU_CONTROL_REG			0x8204
 #define STREAMS_TIMEOUT_REG		0x8208
 #define MISC_TIMEOUT_REG		0x820c
 
-#define ADVANCED_FUNC_CTRL		0x850C	
+#define ADVANCED_FUNC_CTRL		0x850C
 
 /*
  * CR/SR registers MMIO offset
@@ -172,7 +172,7 @@ do {                                    \
 #define TILED_SURFACE_REGISTER_2        0x48c48
 #define TILED_SURFACE_REGISTER_3        0x48c4c
 #define TILED_SURFACE_REGISTER_4        0x48c50
-                                                
+
 #define TILED_SURF_BPP4    0x00000000  /* bits 31-30=00 for  4 bits/pixel */
 #define TILED_SURF_BPP8    0x40000000  /* bits 31-30=01 for  8 bits/pixel */
 #define TILED_SURF_BPP16   0x80000000	/* bits 31-30=10 for 16 bits/pixel */
@@ -186,11 +186,11 @@ do {                                    \
  * the "2D" is partly to set this apart from "BLOCK_WRITE_DISABLE"
  * constant used for bitmap  descriptor
  */
-#define DISABLE_BLOCK_WRITE_2D      0x10 
+#define DISABLE_BLOCK_WRITE_2D      0x10
 #define BLOCK_WRITE_DISABLE         0x0
 
 /* CR31[0] set = Enable 8MB display memory through 64K window at A0000H. */
-#define ENABLE_CPUA_BASE_A0000      0x01  
+#define ENABLE_CPUA_BASE_A0000      0x01
 
 /* Constants for CR69. */
 
@@ -216,10 +216,10 @@ do {                                    \
 
 
 /*
- * unprotect CRTC[0-7]              
- * CR11_7 = 0: Writing to all CRT Controller registers enabled      
- *        = 1: Writing to all bits of CR0~CR7 except CR7_4 disabled 
- */                                                                 
+ * unprotect CRTC[0-7]
+ * CR11_7 = 0: Writing to all CRT Controller registers enabled
+ *        = 1: Writing to all bits of CR0~CR7 except CR7_4 disabled
+ */
 #define UnProtectCRTC()                 \
 do {                                    \
     unsigned char byte;                 \
@@ -228,12 +228,12 @@ do {                                    \
     OUTREG16(CRT_ADDRESS_REG,byte << 8 | 0x11); \
 } while (0)
 
-/*                                  
- * unlock extended regs                     
- * CR38:unlock CR20~CR3F            
- * CR39:unlock CR40~CRFF            
- * SR08:unlock SR09~SRFF            
- */                                 
+/*
+ * unlock extended regs
+ * CR38:unlock CR20~CR3F
+ * CR39:unlock CR40~CRFF
+ * SR08:unlock SR09~SRFF
+ */
 #define UnLockExtRegs()                 \
 do {                                    \
     OUTREG16(CRT_ADDRESS_REG,0X4838);   \
@@ -254,7 +254,7 @@ do {                                    \
 } while (0)
 
 /*
- * Jiayo Hsu, Mar 21, 2002             
+ * Jiayo Hsu, Mar 21, 2002
  * modify this to scalable schema, because different chips have different regs,
  * besides add in patch code for  Paramount(SuperSavage) from 2K
  */
@@ -273,7 +273,7 @@ do {                                            \
 	   OUTREG8(CRT_DATA_REG, a); 				\
 	OUTREG8(CRT_DATA_REG, a);                   \
 } while (0)
- 
+
 #define HZEXP_COMP_1		0x54
 #define HZEXP_BORDER		0x58
 #define HZEXP_FACTOR_IGA1	0x59

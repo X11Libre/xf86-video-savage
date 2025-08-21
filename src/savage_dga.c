@@ -39,7 +39,7 @@ in this Software without prior written authorization from the XFree86 Project.
 
 
 Bool SavageDGAInit(ScreenPtr pScreen);
-static Bool Savage_OpenFramebuffer(ScrnInfoPtr, char **, unsigned char **, 
+static Bool Savage_OpenFramebuffer(ScrnInfoPtr, char **, unsigned char **,
 		int *, int *, int *);
 static Bool Savage_SetMode(ScrnInfoPtr, DGAModePtr);
 static int  Savage_GetViewport(ScrnInfoPtr);
@@ -164,7 +164,7 @@ SECOND_PASS:
 		"SavageDGAInit 1 imgHgt=%d, stride=%d\n",
 		mode->imageHeight,
 		mode->bytesPerScanline );
- 
+
 	    goto SECOND_PASS;
 	} else {
 	    mode->bytesPerScanline = ((pScrn->displayWidth + 15) & ~15) * Bpp;
@@ -180,7 +180,7 @@ SECOND_PASS:
 		"SavageDGAInit 2 imgHgt=%d, stride=%d\n",
 		mode->imageHeight,
 		mode->bytesPerScanline );
-	}		
+	}
 
 	pMode = pMode->next;
 	if(pMode == firstMode)
@@ -193,7 +193,7 @@ SECOND_PASS:
 
 Bool
 SavageDGAInit(ScreenPtr pScreen)
-{   
+{
     ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
     SavagePtr psav = SAVPTR(pScrn);
     DGAModePtr modes = NULL;
@@ -202,40 +202,40 @@ SavageDGAInit(ScreenPtr pScreen)
     xf86ErrorFVerb(DGATRACE, "		SavageDGAInit\n");
 
     /* 8 */
-    modes = SavageSetupDGAMode (pScrn, modes, &num, 8, 8, 
+    modes = SavageSetupDGAMode (pScrn, modes, &num, 8, 8,
 		(pScrn->bitsPerPixel == 8),
 		(pScrn->bitsPerPixel != 8) ? 0 : pScrn->displayWidth,
 		0, 0, 0, PseudoColor);
 
     /* 15 */
-    modes = SavageSetupDGAMode (pScrn, modes, &num, 16, 15, 
+    modes = SavageSetupDGAMode (pScrn, modes, &num, 16, 15,
 		(pScrn->bitsPerPixel == 16),
 		(pScrn->depth != 15) ? 0 : pScrn->displayWidth,
 		0x7c00, 0x03e0, 0x001f, TrueColor);
 
-    modes = SavageSetupDGAMode (pScrn, modes, &num, 16, 15, 
+    modes = SavageSetupDGAMode (pScrn, modes, &num, 16, 15,
 		(pScrn->bitsPerPixel == 16),
 		(pScrn->depth != 15) ? 0 : pScrn->displayWidth,
 		0x7c00, 0x03e0, 0x001f, DirectColor);
 
     /* 16 */
-    modes = SavageSetupDGAMode (pScrn, modes, &num, 16, 16, 
+    modes = SavageSetupDGAMode (pScrn, modes, &num, 16, 16,
 		(pScrn->bitsPerPixel == 16),
 		(pScrn->depth != 16) ? 0 : pScrn->displayWidth,
 		0xf800, 0x07e0, 0x001f, TrueColor);
 
-    modes = SavageSetupDGAMode (pScrn, modes, &num, 16, 16, 
+    modes = SavageSetupDGAMode (pScrn, modes, &num, 16, 16,
 		(pScrn->bitsPerPixel == 16),
 		(pScrn->depth != 16) ? 0 : pScrn->displayWidth,
 		0xf800, 0x07e0, 0x001f, DirectColor);
 
     /* 24-in-32 */
-    modes = SavageSetupDGAMode (pScrn, modes, &num, 32, 24, 
+    modes = SavageSetupDGAMode (pScrn, modes, &num, 32, 24,
 		(pScrn->bitsPerPixel == 32),
 		(pScrn->bitsPerPixel != 32) ? 0 : pScrn->displayWidth,
 		0xff0000, 0x00ff00, 0x0000ff, TrueColor);
 
-    modes = SavageSetupDGAMode (pScrn, modes, &num, 32, 24, 
+    modes = SavageSetupDGAMode (pScrn, modes, &num, 32, 24,
 		(pScrn->bitsPerPixel == 32),
 		(pScrn->bitsPerPixel != 32) ? 0 : pScrn->displayWidth,
 		0xff0000, 0x00ff00, 0x0000ff, DirectColor);
@@ -243,7 +243,7 @@ SavageDGAInit(ScreenPtr pScreen)
     psav->numDGAModes = num;
     psav->DGAModes = modes;
 
-    return DGAInit(pScreen, &Savage_DGAFuncs, modes, num);  
+    return DGAInit(pScreen, &Savage_DGAFuncs, modes, num);
 }
 
 
@@ -290,7 +290,7 @@ Savage_SetMode(
 
 	pScrn->bitsPerPixel = pMode->bitsPerPixel;
 	pScrn->depth = pMode->depth;
-	pScrn->displayWidth = pMode->bytesPerScanline / 
+	pScrn->displayWidth = pMode->bytesPerScanline /
 	    (pMode->bitsPerPixel >> 3);
 
 	SavageSwitchMode(pScrn, pMode->mode);
@@ -301,7 +301,7 @@ Savage_SetMode(
 }
 
 
-static int	
+static int
 Savage_GetViewport(
     ScrnInfoPtr pScrn
 ){
@@ -310,10 +310,10 @@ Savage_GetViewport(
 }
 
 
-static void 
+static void
 Savage_SetViewport(
-   ScrnInfoPtr pScrn, 
-   int x, int y, 
+   ScrnInfoPtr pScrn,
+   int x, int y,
    int flags
 ){
     SavagePtr psav = SAVPTR(pScrn);
@@ -323,9 +323,9 @@ Savage_SetViewport(
 }
 
 
-static Bool 
+static Bool
 Savage_OpenFramebuffer(
-    ScrnInfoPtr pScrn, 
+    ScrnInfoPtr pScrn,
     char **name,
     unsigned char **mem,
     int *size,

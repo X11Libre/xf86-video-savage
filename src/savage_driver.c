@@ -28,7 +28,7 @@
 
 /**
  * \file savage_driver.c
- * 
+ *
  * \author Tim Roberts <timr@probo.com>
  * \author Ani Joshi <ajoshi@unixbox.com>
  *
@@ -138,7 +138,7 @@ extern ScrnInfoPtr gpScrn;
 #ifdef TRACEON
 #define TRACE(prms)	ErrorF prms
 #else
-#define TRACE(prms)  
+#define TRACE(prms)
 #endif
 
 int gSavageEntityIndex = -1;
@@ -395,7 +395,7 @@ static SavageEntPtr SavageEntPriv(ScrnInfoPtr pScrn)
 
 
 /*
- * I'd rather have these wait macros be inline, but S3 has made it 
+ * I'd rather have these wait macros be inline, but S3 has made it
  * darned near impossible.  The bit fields are in a different place in
  * all three families, the status register has a different address in the
  * three families, and even the idle vs busy sense flipped in the Sav2K.
@@ -407,7 +407,7 @@ ResetBCI2K( SavagePtr psav )
     CARD32 cob = INREG( 0x48c18 );
     /* if BCI is enabled and BCI is busy... */
 
-    if( 
+    if(
 	(cob & 0x00000008) &&
 	! (ALT_STATUS_WORD0 & 0x00200000)
     )
@@ -659,7 +659,7 @@ static const OptionInfoRec * SavageAvailableOptions(int chipid, int busid)
 
 static void SavageIdentify(int flags)
 {
-    xf86PrintChipsets("SAVAGE", 
+    xf86PrintChipsets("SAVAGE",
 		      "driver (version " SAVAGE_DRIVER_VERSION ") for S3 Savage chipsets",
 		      SavageChips);
 }
@@ -775,7 +775,7 @@ static Bool SavageProbe(DriverPtr drv, int flags)
 	for (i=0; i<numUsed; i++) {
             EntityInfoPtr pEnt = xf86GetEntityInfo(usedChips[i]);;
             ScrnInfoPtr pScrn = xf86ConfigPciEntity(NULL, 0, usedChips[i],
-						    NULL, RES_SHARED_VGA, 
+						    NULL, RES_SHARED_VGA,
 						    NULL, NULL, NULL, NULL);
 
             if (pScrn != NULL) {
@@ -808,7 +808,7 @@ static Bool SavageProbe(DriverPtr drv, int flags)
 		    psav->Chipset = LookupChipID(SavagePciChipsets,
 						 pEnt->device->chipID);
 		} else {
-		    psav->Chipset = LookupChipID(SavagePciChipsets, 
+		    psav->Chipset = LookupChipID(SavagePciChipsets,
 						 psav->PciInfo->chipType);
 		}
 	    }
@@ -925,7 +925,7 @@ SavageModesAdd(DisplayModePtr Modes, DisplayModePtr Additions)
 
         while (Mode->next)
             Mode = Mode->next;
-        
+
         Mode->next = Additions;
         Additions->prev = Mode;
     }
@@ -944,7 +944,7 @@ SavageAddPanelMode(ScrnInfoPtr pScrn)
     Mode->type = M_T_DRIVER | M_T_PREFERRED;
     pScrn->monitor->Modes = SavageModesAdd(pScrn->monitor->Modes, Mode);
 
-    if ((pScrn->monitor->nHsync == 0) && 
+    if ((pScrn->monitor->nHsync == 0) &&
         (pScrn->monitor->nVrefresh == 0)) {
 	if (!Mode->HSync)
 	    Mode->HSync = ((float) Mode->Clock ) / ((float) Mode->HTotal);
@@ -987,9 +987,9 @@ static void SavageGetPanelInfo(ScrnInfoPtr pScrn)
 
     cr6b = hwp->readCrtc( hwp, 0x6b );
 
-    panelX = (hwp->readSeq(hwp, 0x61) + 
+    panelX = (hwp->readSeq(hwp, 0x61) +
 	    ((hwp->readSeq(hwp, 0x66) & 0x02) << 7) + 1) * 8;
-    panelY = hwp->readSeq(hwp, 0x69) + 
+    panelY = hwp->readSeq(hwp, 0x69) +
 	    ((hwp->readSeq(hwp, 0x6e) & 0x70) << 4) + 1;
 
 
@@ -997,7 +997,7 @@ static void SavageGetPanelInfo(ScrnInfoPtr pScrn)
 	 * for LCD panels of various sizes.  I thought I copied the formula
 	 * from the BIOS, but many users have informed me of my folly.
 	 *
-	 * Instead, I'll abandon any attempt to automatically limit the 
+	 * Instead, I'll abandon any attempt to automatically limit the
 	 * clock, and add an LCDClock option to XF86Config.  Some day,
 	 * I should come back to this.
 	 */
@@ -1016,7 +1016,7 @@ static void SavageGetPanelInfo(ScrnInfoPtr pScrn)
     }
 
     xf86DrvMsg(pScrn->scrnIndex, X_PROBED,
-		   "%dx%d %s LCD panel detected %s\n", 
+		   "%dx%d %s LCD panel detected %s\n",
 		   panelX, panelY, sTechnology,
 		   cr6b & ActiveLCD ? "and active" : "but not active");
 
@@ -1027,7 +1027,7 @@ static void SavageGetPanelInfo(ScrnInfoPtr pScrn)
 	xf86DrvMsg(pScrn->scrnIndex, X_PROBED,
 		       "- Limiting video mode to %dx%d\n",
 		       panelX, panelY );
-	    
+
 	psav->PanelX = panelX;
 	psav->PanelY = panelY;
 
@@ -1129,9 +1129,9 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	    return FALSE;
 	}
 
-	if( 
+	if(
 	    (pScrn->bitsPerPixel != requiredBpp) &&
-	    (pScrn->bitsPerPixel != altBpp) 
+	    (pScrn->bitsPerPixel != altBpp)
 	) {
 	    xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		       "Depth %d must specify %d bpp; %d was given\n",
@@ -1220,7 +1220,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	    psav->rotate = 1;
 #if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 24
             xf86DisableRandR();
-	    xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, 
+	    xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
 		       "Rotating screen clockwise"
                        "- acceleration and RandR disabled\n");
 #else
@@ -1245,7 +1245,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	} else {
 	    xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "\"%s\" is not a valid"
 		       "value for Option \"Rotate\"\n", s);
-	    xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
+	    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 		       "Valid options are \"CW\" or \"CCW\"\n");
 	}
     }
@@ -1268,7 +1268,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     if ((s = xf86GetOptValString(psav->Options, OPTION_OVERLAY))) {
-	
+
 	if (psav->shadowFB) {
 	    xf86DrvMsg(pScrn->scrnIndex,X_INFO,
 		       "Option \"Overlay\" not supported with shadowFB\n");
@@ -1305,7 +1305,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 		xf86DrvMsg(pScrn->scrnIndex,X_INFO,"%i/%i Overlay enabled\n",
 			   pScrn->depth,psav->overlayDepth);
 		psav->primStreamBpp = 8;
-	    } 
+	    }
 	}
     }
 
@@ -1341,7 +1341,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 
     psav->LCDClock = 0.0;
     if( xf86GetOptValFreq( psav->Options, OPTION_LCDCLOCK, OPTUNITS_MHZ, &psav->LCDClock ) )
-	xf86DrvMsg( pScrn->scrnIndex, X_CONFIG, 
+	xf86DrvMsg( pScrn->scrnIndex, X_CONFIG,
 		    "Option: LCDClock %1.2f MHz\n", psav->LCDClock );
 
     if( xf86GetOptValBool( psav->Options, OPTION_SHADOW_STATUS, &psav->ShadowStatus)) {
@@ -1602,7 +1602,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	from = X_DEFAULT;
 	psav->agpMode = SAVAGE_DEFAULT_AGP_MODE;
 	psav->agpSize = 16;
-    
+
 	if (xf86GetOptValInteger(psav->Options,
 				 OPTION_AGP_MODE, &(psav->agpMode))) {
 	    if (psav->agpMode < 1) {
@@ -1611,7 +1611,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	    if (psav->agpMode > SAVAGE_MAX_AGP_MODE) {
 		psav->agpMode = SAVAGE_MAX_AGP_MODE;
 	    }
-	    if ((psav->agpMode > 2) && 
+	    if ((psav->agpMode > 2) &&
 		(psav->Chipset == S3_SAVAGE3D ||
 		 psav->Chipset == S3_SAVAGE_MX))
 		psav->agpMode = 2; /* old savages only support 2x */
@@ -1735,13 +1735,13 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	case S3_SUPERSAVAGE:
 	    psav->HasCRTC2 = TRUE;
 	    break;
-        default: 
+        default:
             psav->HasCRTC2 = FALSE;
     }
 
     if ((psav->IsSecondary || psav->IsPrimary) && !psav->UseBIOS) {
 	xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "BIOS currently required for Dualhead mode setting.\n");
-	return FALSE;	
+	return FALSE;
     }
 
     if (psav->IsSecondary &&
@@ -1816,7 +1816,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	    break;
 
 	case S3_SAVAGE4:
-	    /* 
+	    /*
 	     * The Savage4 has one ugly special case to consider.  On
 	     * systems with 4 banks of 2Mx32 SDRAM, the BIOS says 4MB
 	     * when it really means 8MB.  Why do it the same when you
@@ -1851,7 +1851,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 
 	psav->videoRambytes = pScrn->videoRam * 1024;
 
-	xf86DrvMsg(pScrn->scrnIndex, X_PROBED, 
+	xf86DrvMsg(pScrn->scrnIndex, X_PROBED,
 		"probed videoram:  %dk\n",
 		pScrn->videoRam);
     } else {
@@ -1881,7 +1881,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	psav->videoRambytes = pScrn->videoRam * 1024;
     }
 
-    
+
     /*
      * If we're running with acceleration, compute the command overflow
      * buffer location.  The command overflow buffer must END at a
@@ -1891,11 +1891,11 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     if (psav->NoAccel) {
         psav->cobIndex = 0;
         psav->cobSize = 0;
-    } 
+    }
     else if( ((S3_SAVAGE4_SERIES(psav->Chipset)) ||
              (S3_SUPERSAVAGE == psav->Chipset)) && psav->disableCOB ) {
         /*
-         * The Savage4 and ProSavage have COB coherency bugs which render 
+         * The Savage4 and ProSavage have COB coherency bugs which render
          * the buffer useless.
          */
 	/*
@@ -1907,7 +1907,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	psav->bciThresholdHi = 32;
 	psav->bciThresholdLo = 0;
     } else {
-        /* We use 128kB for the COB on all other chips. */        
+        /* We use 128kB for the COB on all other chips. */
         psav->cobSize = 0x20000;
 	if (S3_SAVAGE3D_SERIES(psav->Chipset) ||
 	    psav->Chipset == S3_SAVAGE2000) {
@@ -1933,15 +1933,15 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	psav->CursorKByte = (psav->videoRambytes >> 10) - 4;
 	psav->endfb = (psav->CursorKByte << 10) - 1;
 	psav->videoRambytes *= 2;
-	xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
+	xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 		"Using %dk of videoram for primary head\n",
 		pScrn->videoRam);
     }
 
     if(psav->IsSecondary)
-    {  
+    {
         pScrn->videoRam /= 2;
-	xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
+	xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 		"Using %dk of videoram for secondary head\n",
 		pScrn->videoRam);
     }
@@ -1965,7 +1965,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     /* check for DVI/flat panel */
     dvi = FALSE;
     if (psav->Chipset == S3_SAVAGE4) {
-	unsigned char sr30 = 0x00; 
+	unsigned char sr30 = 0x00;
 	VGAOUT8(0x3c4, 0x30);
 	/* clear bit 1 */
 	VGAOUT8(0x3c5, VGAIN8(0x3c5) & ~0x02);
@@ -1984,11 +1984,11 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     } else {
 	psav->DisplayType = MT_CRT;
     }
-    
+
     if (psav->IsSecondary)
 	psav->DisplayType = MT_CRT;
 
-    /* Do the DDC dance. */ 
+    /* Do the DDC dance. */
     SavageDoDDC(pScrn);
 
     /* set up ramdac max clock - might be altered by SavageGetPanelInfo */
@@ -2039,7 +2039,7 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 	psav->ModeTable = SavageGetBIOSModeTable( psav, psav->primStreamBpp );
 
 	if( !psav->ModeTable || !psav->ModeTable->NumModes ) {
-	    xf86DrvMsg(pScrn->scrnIndex, X_ERROR, 
+	    xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		       "Failed to fetch any BIOS modes.  Disabling BIOS.\n");
 	    psav->UseBIOS = FALSE;
 	}
@@ -2053,12 +2053,12 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 		       psav->ModeTable->NumModes);
 
 	    for(
-		i = 0, pmt = psav->ModeTable->Modes; 
-		i < psav->ModeTable->NumModes; 
+		i = 0, pmt = psav->ModeTable->Modes;
+		i < psav->ModeTable->NumModes;
 		i++, pmt++ )
 	    {
 		int j;
-		ErrorF( "    [%03x] %d x %d", 
+		ErrorF( "    [%03x] %d x %d",
 			pmt->VesaMode, pmt->Width, pmt->Height );
 		for( j = 0; j < pmt->RefreshCount; j++ )
 		{
@@ -2080,9 +2080,9 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     clockRanges->ClockMulFactor = 1.0;
 
     i = xf86ValidateModes(pScrn, pScrn->monitor->Modes,
-			  pScrn->display->modes, clockRanges, NULL, 
+			  pScrn->display->modes, clockRanges, NULL,
 			  256, 2048, 16 * pScrn->bitsPerPixel,
-			  128, 2048, 
+			  128, 2048,
 			  pScrn->virtualX, pScrn->virtualY,
 			  psav->videoRambytes, LOOKUP_BEST_REFRESH);
 
@@ -2125,8 +2125,8 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 		.minorversion = 0
 	    };
 	    int errmaj, errmin;
-	    
-	    if( !LoadSubModule(pScrn->module, modName, 
+
+	    if( !LoadSubModule(pScrn->module, modName,
 		NULL, NULL, NULL, &req, &errmaj, &errmin) ) {
 		LoaderErrorMsg(NULL, modName, errmaj, errmin);
 	    	SavageFreeRec(pScrn);
@@ -2190,7 +2190,7 @@ static Bool SavageEnterVT(ScrnInfoPtr pScrn)
     if(SavageModeInit(pScrn, pScrn->currentMode)) {
 	/* some BIOSes seem to enable HW cursor on PM resume */
 	if (!SAVPTR(pScrn)->hwc_on)
-	    SavageHideCursor( pScrn ); 
+	    SavageHideCursor( pScrn );
 	return TRUE;
     }
 
@@ -2415,7 +2415,7 @@ static void SavageWriteMode(ScrnInfoPtr pScrn, vgaRegPtr vgaSavePtr,
     vgaIOBase = hwp->IOBase;
     vgaCRIndex = vgaIOBase + 4;
     vgaCRReg = vgaIOBase + 5;
-    
+
     TRACE(("SavageWriteMode(%x)\n", restore->mode));
 
 #ifdef SAVAGEDRI
@@ -2432,7 +2432,7 @@ static void SavageWriteMode(ScrnInfoPtr pScrn, vgaRegPtr vgaSavePtr,
 	return;
     }
 
-    if( Entering && 
+    if( Entering &&
 	(!S3_SAVAGE_MOBILE_SERIES(psav->Chipset) || (psav->ForceInit))
     )
 	SavageInitialize2DEngine(pScrn);
@@ -2481,7 +2481,7 @@ static void SavageWriteMode(ScrnInfoPtr pScrn, vgaRegPtr vgaSavePtr,
 	/* Enable gamma correction, set CLUT to 8 bit */
 
 	VGAOUT8(0x3c4, 0x1b);
-	if( (pScrn->bitsPerPixel == 32) && !psav->DGAactive 
+	if( (pScrn->bitsPerPixel == 32) && !psav->DGAactive
 	    && ! psav->FBStart2nd )
 		VGAOUT8(0x3c5, 0x18 );
 	else
@@ -2541,7 +2541,7 @@ static void SavageWriteMode(ScrnInfoPtr pScrn, vgaRegPtr vgaSavePtr,
 	    }
 	}
 
-        if( (psav->Chipset != S3_SAVAGE2000) && 
+        if( (psav->Chipset != S3_SAVAGE2000) &&
 	    !S3_SAVAGE_MOBILE_SERIES(psav->Chipset) )
 	    VGAOUT16(vgaCRIndex, (cr79 << 8) | 0x79);
 
@@ -2584,7 +2584,7 @@ static void SavageWriteMode(ScrnInfoPtr pScrn, vgaRegPtr vgaSavePtr,
 	}
 
 	/* set the correct clock for some BIOSes */
-	VGAOUT8(VGA_MISC_OUT_W, 
+	VGAOUT8(VGA_MISC_OUT_W,
 		VGAIN8(VGA_MISC_OUT_R) | 0x0C);
 	/* Some BIOSes turn on clock doubling on non-doubled modes */
 	if (pScrn->bitsPerPixel < 24) {
@@ -2756,7 +2756,7 @@ static void SavageWriteMode(ScrnInfoPtr pScrn, vgaRegPtr vgaSavePtr,
     VGAOUT8(0x3c4, 0x08);
     VGAOUT8(0x3c5, 0x06);
 
-    /* Restore extended sequencer regs for MCLK. SR10 == 255 indicates that 
+    /* Restore extended sequencer regs for MCLK. SR10 == 255 indicates that
      * we should leave the default SR10 and SR11 values there.
      */
     if (restore->SR10 != 255) {
@@ -2877,7 +2877,7 @@ static Bool SavageMapMem(ScrnInfoPtr pScrn)
             + psav->PciInfo->regions[0].base_addr;
         psav->FbRegion.base = psav->PciInfo->regions[1].base_addr;
 #else
-        psav->MmioRegion.base = SAVAGE_NEWMMIO_REGBASE_S4 
+        psav->MmioRegion.base = SAVAGE_NEWMMIO_REGBASE_S4
             + psav->PciInfo->memBase[0];
         psav->FbRegion.base = psav->PciInfo->memBase[1];
 #endif
@@ -2893,7 +2893,7 @@ static Bool SavageMapMem(ScrnInfoPtr pScrn)
     psav->ApertureRegion.size = (psav->IsPrimary || psav->IsSecondary)
         ? (0x01000000 * 2) : (0x01000000 * 5);
 
-    if ((psav->Chipset == S3_SUPERSAVAGE) 
+    if ((psav->Chipset == S3_SUPERSAVAGE)
         || (psav->Chipset == S3_SAVAGE2000)) {
 #ifdef XSERVER_LIBPCIACCESS
         psav->ApertureRegion.base = psav->PciInfo->regions[2].base_addr;
@@ -2916,7 +2916,7 @@ static Bool SavageMapMem(ScrnInfoPtr pScrn)
                                     | PCI_DEV_MAP_FLAG_WRITE_COMBINE),
                                    & psav->FbRegion.memory);
 #else
-        psav->FbRegion.memory = 
+        psav->FbRegion.memory =
             xf86MapPciMem(pScrn->scrnIndex, VIDMEM_FRAMEBUFFER,
                           psav->PciTag, psav->FbRegion.base,
                           psav->FbRegion.size);
@@ -2942,7 +2942,7 @@ static Bool SavageMapMem(ScrnInfoPtr pScrn)
                                     | PCI_DEV_MAP_FLAG_WRITE_COMBINE),
                                    & psav->ApertureRegion.memory);
 #else
-        psav->ApertureRegion.memory = 
+        psav->ApertureRegion.memory =
             xf86MapPciMem(pScrn->scrnIndex, VIDMEM_FRAMEBUFFER,
                           psav->PciTag, psav->ApertureRegion.base,
                           psav->ApertureRegion.size);
@@ -2967,7 +2967,7 @@ static Bool SavageMapMem(ScrnInfoPtr pScrn)
                                    (PCI_DEV_MAP_FLAG_WRITABLE),
                                    & psav->MmioRegion.memory);
 #else
-        psav->MmioRegion.memory = 
+        psav->MmioRegion.memory =
             xf86MapPciMem(pScrn->scrnIndex, VIDMEM_MMIO,
                           psav->PciTag, psav->MmioRegion.base,
                           psav->MmioRegion.size);
@@ -3070,7 +3070,7 @@ static Bool SavageCheckAvailableRamFor3D(ScrnInfoPtr pScrn)
                      tiledBufferSize; /* depth buffer */
 
     xf86DrvMsg(pScrn->scrnIndex,X_INFO,
-		"%d kB of Videoram needed for 3D; %d kB of Videoram available\n", 
+		"%d kB of Videoram needed for 3D; %d kB of Videoram available\n",
 		RamNeededFor3D/1024, psav->videoRambytes/1024);
 
     if (RamNeededFor3D <= psav->videoRambytes) {
@@ -3130,12 +3130,12 @@ static void SavageInitShadowStatus(ScrnInfoPtr pScrn)
     SavageInitStatus(pScrn);
 
     if( psav->ShadowStatus ) {
-	psav->ShadowPhysical = 
+	psav->ShadowPhysical =
 	    psav->FbRegion.base + psav->CursorKByte*1024 + 4096 - 32;
-	
+
 	psav->ShadowVirtual = (CARD32 *)
 	    (psav->FBBase + psav->CursorKByte*1024 + 4096 - 32);
-	
+
 	xf86DrvMsg( pScrn->scrnIndex, X_PROBED,
 		    "Shadow area physical %08lx, linear %p\n",
 		    psav->ShadowPhysical, (void *)psav->ShadowVirtual );
@@ -3163,10 +3163,10 @@ static Bool SavageScreenInit(ScreenPtr pScreen, int argc, char **argv)
 
     psav = SAVPTR(pScrn);
 
-    pEnt = xf86GetEntityInfo(pScrn->entityList[0]); 
+    pEnt = xf86GetEntityInfo(pScrn->entityList[0]);
     if (!psav->pVbe)
 	psav->pVbe = VBEInit(NULL, pEnt->index);
- 
+
     SavageEnableMMIO(pScrn);
 
     if (!SavageMapMem(pScrn))
@@ -3207,11 +3207,11 @@ static Bool SavageScreenInit(ScreenPtr pScreen, int argc, char **argv)
 			"Dual-head configuration is not working with "
 			"DRI at present.\n");
     } else if (/*!psav->bTiled*/psav->bDisableTile) {
-            xf86DrvMsg(pScrn->scrnIndex, X_WARNING, 
+            xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
 	    		"Direct Rendering requires a tiled framebuffer -- "
 			"Set Option \"DisableTile\" \"false\"\n");
     } else if (psav->cobSize == 0) {
-            xf86DrvMsg(pScrn->scrnIndex, X_WARNING, 
+            xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
 	    		"Direct Rendering requires the COB -- "
 			"Set Option \"DisableCOB\" \"false\"\n");
     } else if (((psav->Chipset == S3_TWISTER)
@@ -3240,7 +3240,7 @@ static Bool SavageScreenInit(ScreenPtr pScreen, int argc, char **argv)
 	}
     } else
         psav->directRenderingEnabled = FALSE;
-    
+
     if(psav->directRenderingEnabled) {
         xf86DrvMsg(pScrn->scrnIndex,X_CONFIG,"DRI is enabled\n");
     }
@@ -3263,12 +3263,12 @@ static Bool SavageScreenInit(ScreenPtr pScreen, int argc, char **argv)
  	if (!miSetVisualTypes(pScrn->depth, visual,
   			      pScrn->rgbBits, pScrn->defaultVisual))
   	    return FALSE;
- 	
- 	if (psav->FBStart2nd) {/* we have overlay */	
+
+ 	if (psav->FBStart2nd) {/* we have overlay */
  	    visual = psav->overlayDepth > 8 ? TrueColorMask :
  		miGetDefaultVisualMask(DEPTH_BPP(psav->overlayDepth));
  	    if (!miSetVisualTypes(psav->overlayDepth, visual,
- 				  psav->overlayDepth > 8 ? 8 : 6, 
+ 				  psav->overlayDepth > 8 ? 8 : 6,
  				  pScrn->defaultVisual))
  		return FALSE;
  	}
@@ -3295,7 +3295,7 @@ static Bool SavageScreenInit(ScreenPtr pScreen, int argc, char **argv)
 		    visual->redMask = pScrn->mask.red;
 		    visual->greenMask = pScrn->mask.green;
 		    visual->blueMask = pScrn->mask.blue;
-		} else if (visual->offsetRed > 8 
+		} else if (visual->offsetRed > 8
 			   || visual->offsetGreen > 8
 			   || visual->offsetBlue > 8) {
 	/*
@@ -3304,7 +3304,7 @@ static Bool SavageScreenInit(ScreenPtr pScreen, int argc, char **argv)
 	 */
 		    int tmp;
 		    int c_s = 0;
-		    
+
 		    tmp = visual->offsetBlue;
 		    visual->offsetBlue = visual->offsetRed;
 		    visual->offsetRed = tmp;
@@ -3362,7 +3362,7 @@ static Bool SavageScreenInit(ScreenPtr pScreen, int argc, char **argv)
 
     if (psav->shadowFB) {
 	RefreshAreaFuncPtr refreshArea = SavageRefreshArea;
-      
+
 	if(psav->rotate) {
 	    if (!psav->PointerMoved) {
 		psav->PointerMoved = pScrn->PointerMoved;
@@ -3376,7 +3376,7 @@ static Bool SavageScreenInit(ScreenPtr pScreen, int argc, char **argv)
 	    case 32:	refreshArea = SavageRefreshArea32;	break;
 	    }
 	}
-      
+
 	ShadowFBInit(pScreen, refreshArea);
     }
 
@@ -3385,7 +3385,7 @@ static Bool SavageScreenInit(ScreenPtr pScreen, int argc, char **argv)
 
     colormapFlags =  CMAP_RELOAD_ON_MODE_SWITCH
 	| ((psav->FBStart2nd) ? 0 : CMAP_PALETTED_TRUECOLOR);
-    
+
     if (psav->Chipset == S3_SAVAGE4) {
         if (!xf86HandleColormaps(pScreen, 256, pScrn->rgbBits, SavageLoadPaletteSavage4,
 				 NULL, colormapFlags ))
@@ -3497,15 +3497,15 @@ static int SavageInternalScreenInit(ScreenPtr pScreen)
                            psav->ulAperturePitch / (pScrn->bitsPerPixel >> 3), /*displayWidth,*/
                            pScrn->bitsPerPixel);
 
-    } else { 
+    } else {
 	FbOverlayScrPrivPtr pScrPriv;
 	int Depth2nd = DEPTH_2ND(pScrn);
-	if (!fbSetupScreen (pScreen, FBStart, width, height, 
+	if (!fbSetupScreen (pScreen, FBStart, width, height,
 			    pScrn->xDpi, pScrn->yDpi, displayWidth, 8))
 	    return FALSE;
 	if (pScrn->depth == 8) {
-	    ret = fbOverlayFinishScreenInit (pScreen, FBStart, 
-					     psav->FBStart2nd, width, 
+	    ret = fbOverlayFinishScreenInit (pScreen, FBStart,
+					     psav->FBStart2nd, width,
 					     height,pScrn->xDpi, pScrn->yDpi,
 					     displayWidth,displayWidth,
 					     8, DEPTH_BPP(Depth2nd),
@@ -3514,8 +3514,8 @@ static int SavageInternalScreenInit(ScreenPtr pScreen)
 	    pScrPriv->layer[0].key = pScrn->colorKey;
 	} else {
 	    ret = fbOverlayFinishScreenInit (pScreen, psav->FBStart2nd,
-					     FBStart, 
-					     width, height,pScrn->xDpi, 
+					     FBStart,
+					     width, height,pScrn->xDpi,
 					     pScrn->yDpi,
 					     displayWidth,displayWidth,
 					     DEPTH_BPP(Depth2nd), 8,
@@ -3600,7 +3600,7 @@ static Bool SavageModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     vgaCRIndex = vgaIOBase + 4;
     vgaCRReg = vgaIOBase + 5;
 
-    TRACE(("SavageModeInit(%dx%d, %dkHz)\n", 
+    TRACE(("SavageModeInit(%dx%d, %dkHz)\n",
 	mode->HDisplay, mode->VDisplay, mode->Clock));
 
     if (psav->IsSecondary) {
@@ -3644,7 +3644,7 @@ static Bool SavageModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 	    new->CR67 = 0x00;	/* 8bpp, 1 pixel/clock */
 	break;
     case 15:
-	if( 
+	if(
 	    S3_SAVAGE_MOBILE_SERIES(psav->Chipset) ||
 	    ((psav->Chipset == S3_SAVAGE2000) && (dclk >= 230000))
 	)
@@ -3653,7 +3653,7 @@ static Bool SavageModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 	    new->CR67 = 0x20;	/* 15bpp, 1 pixels/clock */
 	break;
     case 16:
-	if( 
+	if(
 	    S3_SAVAGE_MOBILE_SERIES(psav->Chipset) ||
 	    ((psav->Chipset == S3_SAVAGE2000) && (dclk >= 230000))
 	)
@@ -3683,7 +3683,7 @@ static Bool SavageModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     }
 
     if( !new->mode ) {
-	/* 
+	/*
 	 * Either BIOS use is disabled, or we failed to find a suitable
 	 * match.  Fall back to traditional register-crunching.
 	 */
@@ -3714,7 +3714,7 @@ static Bool SavageModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 
 	/* set 8-bit CLUT */
 	new->SR1B |= 0x10;
-	
+
 	new->CR43 = new->CR45 = new->CR65 = 0x00;
 
 	VGAOUT8(vgaCRIndex, 0x40);
@@ -3776,7 +3776,7 @@ static Bool SavageModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 	j = (vganew->CRTC[0] + ((i & 0x01) << 8) +
 	     vganew->CRTC[4] + ((i & 0x10) << 4) + 1) / 2;
 	if (j - (vganew->CRTC[4] + ((i & 0x10) << 4)) < 4) {
-	    if (vganew->CRTC[4] + ((i & 0x10) << 4) + 4 <= 
+	    if (vganew->CRTC[4] + ((i & 0x10) << 4) + 4 <=
 	        vganew->CRTC[0] + ((i & 0x01) << 8))
 		j = vganew->CRTC[4] + ((i & 0x10) << 4) + 4;
 	    else
@@ -3825,7 +3825,7 @@ static Bool SavageModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 	    new->CR33 = 0x00;
 	else
 	    new->CR33 = 0x08;
-	     
+
 	vganew->CRTC[0x17] = 0xeb;
 
 	new->CR67 |= 1;
@@ -3894,7 +3894,7 @@ static Bool SavageCloseScreen(ScreenPtr pScreen)
     }
 
     if (pScrn->vtSema) {
-        if (psav->FBStart2nd) 
+        if (psav->FBStart2nd)
 	    SavageStreamsOff(pScrn);
 	SavageWriteMode(pScrn, vgaSavePtr, SavageSavePtr, FALSE);
         SavageResetStreams(pScrn);
@@ -3947,7 +3947,7 @@ SavageDoAdjustFrame(ScrnInfoPtr pScrn, int x, int y, int crtc2)
 {
     SavagePtr psav = SAVPTR(pScrn);
     int address=0,top=0,left=0,tile_height,tile_size;
-    
+
     TRACE(("SavageDoAdjustFrame(%d,%d,%d)\n", x, y, crtc2));
 
     if (psav->Chipset == S3_SAVAGE2000) {
@@ -3980,7 +3980,7 @@ SavageDoAdjustFrame(ScrnInfoPtr pScrn, int x, int y, int crtc2)
 	if (!crtc2) {
             OUTREG32(PRI_STREAM_FBUF_ADDR0, address & 0xFFFFFFFC);
             OUTREG32(PRI_STREAM_FBUF_ADDR1, address & 0xFFFFFFFC);/* IGA1 */
-        } else { 
+        } else {
             OUTREG32(PRI_STREAM2_FBUF_ADDR0, address & 0xFFFFFFFC);/* IGA2 */
             OUTREG32(PRI_STREAM2_FBUF_ADDR1, address & 0xFFFFFFFC);
 	}
@@ -4022,7 +4022,7 @@ Bool SavageSwitchMode(ScrnInfoPtr pScrn, DisplayModePtr mode)
     if (psav->IsPrimary) {
         DevUnion* pPriv;
         SavageEntPtr pSavEnt;
-        pPriv = xf86GetEntityPrivate(pScrn->entityList[0], 
+        pPriv = xf86GetEntityPrivate(pScrn->entityList[0],
               gSavageEntityIndex);
         pSavEnt = pPriv->ptr;
         SavageModeInit(pSavEnt->pSecondaryScrn, pSavEnt->pSecondaryScrn->currentMode);
@@ -4114,7 +4114,7 @@ void SavageLoadPalette(ScrnInfoPtr pScrn, int numColors, int *indices,
         byte = VGAIN8(0x3c5);
         VGAOUT8(0x3c5, (byte & ~0x03) | 0x02); /* CLUT 2 */
     }
-    
+
     for (i=0; i<numColors; i++) {
 	index = indices[i];
 	if (index == pScrn->colorKey) updateKey = index;
@@ -4150,9 +4150,9 @@ SavageUpdateKey(ScrnInfoPtr pScrn, int r, int g, int b)
 	ul = 1;
 	ol = 0;
     }
-    if (!(pScreen = pScrn->pScreen) 
+    if (!(pScreen = pScrn->pScreen)
 	|| !psav->FBStart2nd
-	|| !(pScrOvlPriv = fbOverlayGetScrPriv(pScreen))) 
+	|| !(pScrOvlPriv = fbOverlayGetScrPriv(pScreen)))
 	return;
     key = ((Shift(r,psav->overlay.redShift) & psav->overlay.redMask)
 	   | (Shift(g,psav->overlay.greenShift) & psav->overlay.greenMask)
@@ -4176,7 +4176,7 @@ void SavageLoadPaletteSavage4(ScrnInfoPtr pScrn, int numColors, int *indices,
 
     for (int n = 0; n < numColors; n++) {
 	if (!(inStatus1() & 0x08))
-  	    VerticalRetraceWait(); 
+  	    VerticalRetraceWait();
 	index = indices[n];
 	VGAOUT8(0x3c8, index);
 	VGAOUT8(0x3c9, colors[index].red);
@@ -4306,7 +4306,7 @@ void SavageGEReset(ScrnInfoPtr pScrn, int from_timeout,
 	    case S3_SAVAGE2000:
 	      success = (ALT_STATUS_WORD0 & 0x008fffff) == 0;
 	      break;
-	}	
+	}
 	if(!success) {
 	    usleep(10000);
 	    xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
@@ -4450,11 +4450,11 @@ SavageDDC1Read(ScrnInfoPtr pScrn)
     SavagePtr psav = SAVPTR(pScrn);
 
     UnLockExtRegs();
-    
+
     VerticalRetraceWait();
-    
+
     InI2CREG(tmp,psav->I2CPort);
-    
+
     return ((unsigned int) (tmp & 0x08));
 }
 
@@ -4550,7 +4550,7 @@ SavageResetStreams(ScrnInfoPtr pScrn)
 	case S3_SAVAGE3D:
         case S3_SAVAGE4:
         case S3_TWISTER:
-        case S3_PROSAVAGE:            
+        case S3_PROSAVAGE:
         case S3_PROSAVAGEDDR:
             OUTREG32(PRI_STREAM_STRIDE,0);
             OUTREG32(PRI_STREAM_FBUF_ADDR0,0);

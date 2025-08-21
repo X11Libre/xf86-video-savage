@@ -75,7 +75,7 @@ SavageInitSecondaryStreamOld(ScrnInfoPtr pScrn)
 
     OUTREG(SSTREAM_STRIDE_REG, pitch);
     OUTREG(SSTREAM_WINDOW_START_REG, OS_XY(0,0));
-    OUTREG(SSTREAM_WINDOW_SIZE_REG, 
+    OUTREG(SSTREAM_WINDOW_SIZE_REG,
 	   OS_WH(pScrn->displayWidth, pScrn->virtualY));
 
     pitch = (pitch + 7) / 8;
@@ -141,7 +141,7 @@ SavageInitSecondaryStream(ScrnInfoPtr pScrn)
     if( S3_SAVAGE_MOBILE_SERIES(psav->Chipset) ||
 	(psav->Chipset == S3_SAVAGE2000) )
 	SavageInitSecondaryStreamNew(pScrn);
-    else 
+    else
 	SavageInitSecondaryStreamOld(pScrn);
 }
 
@@ -172,7 +172,7 @@ void SavageInitStreamsOld(ScrnInfoPtr pScrn)
 	    case 16: format = 5 << 24; break;
 	    case 24: format = 7 << 24; break;
 	}
-        OUTREG(PSTREAM_FBSIZE_REG, 
+        OUTREG(PSTREAM_FBSIZE_REG,
 		pScrn->virtualY * pScrn->virtualX * (pScrn->bitsPerPixel >> 3));
     }
 
@@ -212,9 +212,9 @@ void SavageInitStreamsNew(ScrnInfoPtr pScrn)
 
     xf86ErrorFVerb(STREAMS_TRACE, "SavageInitStreams\n" );
 
-    if ( S3_SAVAGE_MOBILE_SERIES(psav->Chipset) && 
+    if ( S3_SAVAGE_MOBILE_SERIES(psav->Chipset) &&
 	(psav->DisplayType == MT_LCD) &&
-	!psav->CrtOnly && 
+	!psav->CrtOnly &&
 	!psav->TvOn )
     {
 	OverlayParamInit( pScrn );
@@ -397,7 +397,7 @@ void PatchEnableSPofPanel(ScrnInfoPtr pScrn)
 
     OUTREG8(CRT_ADDRESS_REG,0x65);
     OUTREG8(CRT_DATA_REG,INREG8(CRT_DATA_REG)|0xC0);
-                                                                                                                    
+
     if (pScrn->bitsPerPixel == 8) {
         OUTREG32(PSTREAM_CONTROL_REG,0x00000000);
     } else {
@@ -479,13 +479,13 @@ static void InitStreamsForExpansion(ScrnInfoPtr pScrn)
     psav->YExp1 = YExpansion >> 16;
     psav->YExp2 = YExpansion & 0xFFFF;
 
-    psav->displayXoffset = 
+    psav->displayXoffset =
        ((PanelSizeX - (psav->XExp1 * ViewPortWidth) / psav->XExp2) / 2 + 7) & 0xfff8;
-    psav->displayYoffset = 
+    psav->displayYoffset =
        ((PanelSizeY - (psav->YExp1 * ViewPortHeight) / psav->YExp2) / 2);
 }
 
-void 
+void
 SavageStreamsOn(ScrnInfoPtr pScrn)
 {
     SavagePtr psav = SAVPTR(pScrn);
@@ -514,7 +514,7 @@ SavageStreamsOn(ScrnInfoPtr pScrn)
 
 	if (psav->IsSecondary) {
 	    SelectIGA2();
-	    /* Wait for VBLANK. */	
+	    /* Wait for VBLANK. */
 	    VerticalRetraceWait();
 	    /* Fire up streams! */
 	    VGAOUT16( vgaCRIndex, (jStreamsControl << 8) | EXT_MISC_CTRL2 );
@@ -524,7 +524,7 @@ SavageStreamsOn(ScrnInfoPtr pScrn)
 	    OUTREG( SEC_STREAM2_COLOR_CONVERT2, 0x00039F9A );
 	    OUTREG( SEC_STREAM2_COLOR_CONVERT3, 0x01F1547E );
 	} else if (psav->IsPrimary) {
-	    /* Wait for VBLANK. */	
+	    /* Wait for VBLANK. */
 	    VerticalRetraceWait();
 	    /* Fire up streams! */
 	    VGAOUT16( vgaCRIndex, (jStreamsControl << 8) | EXT_MISC_CTRL2 );
@@ -533,7 +533,7 @@ SavageStreamsOn(ScrnInfoPtr pScrn)
 	    OUTREG( SEC_STREAM_COLOR_CONVERT2, 0x00039F9A );
 	    OUTREG( SEC_STREAM_COLOR_CONVERT3, 0x01F1547E );
 	} else {
-	    /* Wait for VBLANK. */	
+	    /* Wait for VBLANK. */
 	    VerticalRetraceWait();
 	    /* Fire up streams! */
 	    VGAOUT16( vgaCRIndex, (jStreamsControl << 8) | EXT_MISC_CTRL2 );
@@ -549,7 +549,7 @@ SavageStreamsOn(ScrnInfoPtr pScrn)
 
 	jStreamsControl = VGAIN8( vgaCRReg ) | ENABLE_STREAM1;
 
-	/* Wait for VBLANK. */	
+	/* Wait for VBLANK. */
 	VerticalRetraceWait();
 	/* Fire up streams! */
 	VGAOUT16( vgaCRIndex, (jStreamsControl << 8) | EXT_MISC_CTRL2 );
