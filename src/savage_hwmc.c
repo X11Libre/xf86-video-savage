@@ -43,7 +43,7 @@
 #include "dixstruct.h"
 #include "fourcc.h"
 
-#define SAVAGE_MAX_SURFACES    5 
+#define SAVAGE_MAX_SURFACES    5
 #define SAVAGE_MAX_SUBPICTURES 1
 
 #define XVMC_IDCT_8BIT         0x80000000
@@ -85,7 +85,7 @@ typedef struct {
 } SAVAGEXvMCCreateContextRec;
 
 
-static int yv12_subpicture_index_list[1] = 
+static int yv12_subpicture_index_list[1] =
 {
   FOURCC_IA44
 };
@@ -95,10 +95,10 @@ static XF86MCImageIDList yv12_subpicture_list =
   1,
   yv12_subpicture_index_list
 };
- 
+
 static XF86MCSurfaceInfoRec savage_YV12_mpg2_surface =
 {
-    FOURCC_YV12,  
+    FOURCC_YV12,
     XVMC_CHROMA_FORMAT_420,
     0,
     720,
@@ -110,7 +110,7 @@ static XF86MCSurfaceInfoRec savage_YV12_mpg2_surface =
     &yv12_subpicture_list
 };
 
-static XF86MCSurfaceInfoPtr ppSI[1] = 
+static XF86MCSurfaceInfoPtr ppSI[1] =
 {
     (XF86MCSurfaceInfoPtr)&savage_YV12_mpg2_surface,
 };
@@ -123,14 +123,14 @@ static XF86ImagePtr savage_subpicture_list[1] =
   (XF86ImagePtr)&ia44_subpicture,
 };
 
-/* Fill in the device dependent adaptor record. 
+/* Fill in the device dependent adaptor record.
  * This is named "SAVAGE Video Overlay" because this code falls under the
  * XV extension, the name must match or it won't be used.
  *
  * Surface and Subpicture - see above
  * Function pointers to functions below
  */
-static XF86MCAdaptorRec pAdapt = 
+static XF86MCAdaptorRec pAdapt =
 {
   "Savage Streams Engine",	/* name */
   1,				/* num_surfaces */
@@ -145,7 +145,7 @@ static XF86MCAdaptorRec pAdapt =
   (xf86XvMCDestroySubpictureProcPtr)SAVAGEXvMCDestroySubpicture
 };
 
-static XF86MCAdaptorPtr ppAdapt[1] = 
+static XF86MCAdaptorPtr ppAdapt[1] =
 {
 	(XF86MCAdaptorPtr)&pAdapt
 };
@@ -157,10 +157,10 @@ static XF86MCAdaptorPtr ppAdapt[1] =
  *  Initialize the hardware motion compensation extension for this
  *  hardware. The initialization routines want the address of the pointers
  *  to the structures, not the address of the structures. This means we
- *  allocate (or create static?) the pointer memory and pass that 
+ *  allocate (or create static?) the pointer memory and pass that
  *  address. This seems a little convoluted.
  *
- *  We need to allocate memory for the device depended adaptor record. 
+ *  We need to allocate memory for the device depended adaptor record.
  *  This is what holds the pointers to all our device functions.
  *
  *  We need to map the overlay registers into the drm.
@@ -171,11 +171,11 @@ static XF86MCAdaptorPtr ppAdapt[1] =
  *    Screen pointer
  *
  *  Outputs:
- *    None, this calls the device independent screen initialization 
+ *    None, this calls the device independent screen initialization
  *    function.
  *
  *  Revisions:
- *  
+ *
  **************************************************************************/
 Bool SAVAGEInitMC(ScreenPtr pScreen)
 {
@@ -189,7 +189,7 @@ Bool SAVAGEInitMC(ScreenPtr pScreen)
   /* Clear the Surface Allocation */
   for(i=0; i<SAVAGE_MAX_SURFACES; i++) {
 	pSAVAGE->surfaceAllocation[i] = 0;
-  } 
+  }
 
   if(pSAVAGE->hwmcSize == 0)
   {
@@ -203,11 +203,11 @@ Bool SAVAGEInitMC(ScreenPtr pScreen)
   if(drmAddMap(pSAVAGE->drmFD, offset, pSAVAGE->hwmcSize,
                DRM_FRAME_BUFFER, 0, &pSAVAGEDriPriv->xvmcSurfHandle) < 0)
   {
-      
+
     xf86DrvMsg(X_ERROR, pScrn->scrnIndex,
         "SAVAGEInitMC: Cannot add map to drm!\n");
     return FALSE;
-  } 
+  }
 
   return xf86XvMCScreenInit(pScreen, 1, ppAdapt);
 }
@@ -305,7 +305,7 @@ int SAVAGEXvMCCreateSurface (ScrnInfoPtr pScrn, XvMCSurfacePtr pSurf,
   SavagePtr pSAVAGE = SAVPTR(pScrn);
   int i;
   /* This size is used for flip, mixer, subpicture and palette buffers*/
-  unsigned int offset = ((786*576*2 + 2048)*5 + 2048) & 0xfffff800; 
+  unsigned int offset = ((786*576*2 + 2048)*5 + 2048) & 0xfffff800;
 
   *priv = (long *)calloc(2,sizeof(long));
 
@@ -348,7 +348,7 @@ int SAVAGEXvMCCreateSubpicture (ScrnInfoPtr pScrn, XvMCSubpicturePtr pSubp,
 
   *num_priv = 1;
 
-  for(i = SAVAGE_MAX_SURFACES; i < SAVAGE_MAX_SURFACES + SAVAGE_MAX_SUBPICTURES; i++) {  
+  for(i = SAVAGE_MAX_SURFACES; i < SAVAGE_MAX_SURFACES + SAVAGE_MAX_SUBPICTURES; i++) {
       if(!pSAVAGE->surfaceAllocation[i]) {
           pSAVAGE->surfaceAllocation[i] = pSubp->subpicture_id;
           (*priv)[0] = ( 576*1024 * i);

@@ -9,8 +9,8 @@
 /*
  *  High 8 bit of primary bitmap descriptor 2 register.
  *  Bits 25-24: Tile Format  00 = Linear ; 10 = 16 bits; 11 = 32 bits (Savage4)
- *            00 = Linear ; 01 = Tile; 10 = Texture tiling format/ Destination Tiling format      
- *            11 = Reserved/Destination tiling format. 
+ *            00 = Linear ; 01 = Tile; 10 = Texture tiling format/ Destination Tiling format
+ *            11 = Reserved/Destination tiling format.
  */
 
 
@@ -32,7 +32,7 @@
 #define   S3_BD64                          1
 
 
- 
+
 /*  Global Bitmap Descriptor */
 #define   S3_BCI_GLB_BD_LOW             0x8168
 #define   S3_BCI_GLB_BD_HIGH            0x816C

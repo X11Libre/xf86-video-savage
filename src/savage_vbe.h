@@ -33,7 +33,7 @@ This software has NO WARRANTY.  Use it at your own risk.
  *
  *     e.g. used by Trio3D, GX-3
  *************************************************************************/
- 
+
 #define S3_GET_SVGA_BUF          0x0000
 #define S3_SAVE_SVGA_STATE       0x0001
 #define S3_RESTORE_SVGA_STATE    0x0002

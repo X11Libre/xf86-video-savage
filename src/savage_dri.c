@@ -64,13 +64,13 @@ void SAVAGEDRIMoveBuffers( WindowPtr pParent, DDXPointRec ptOldOrg,
 /*        almost the same besides set src/desc to */
 /*        Primary Bitmap Description              */
 
-static void 
+static void
 SAVAGEDRISetupForScreenToScreenCopy(
     ScrnInfoPtr pScrn, int xdir, int ydir,
     int rop, unsigned planemask, int transparency_color);
 
 
-static void 
+static void
 SAVAGEDRISubsequentScreenToScreenCopy(
     ScrnInfoPtr pScrn, int x1, int y1, int x2, int y2,
     int w, int h);
@@ -770,7 +770,7 @@ static void SAVAGEDRISetupTiledSurfaceRegs( SavagePtr psav )
 {
       SAVAGEDRIPtr pSAVAGEDRI = (SAVAGEDRIPtr)psav->pDRIInfo->devPrivate;
       unsigned int value = 0;
-      
+
       OUTREG(0x850C,(INREG(0x850C) | 0x00008000)); /* AGD: I don't think this does anything on 3D/MX/IX */
 						   /* maybe savage4 too... */
       if ((psav->Chipset == S3_SAVAGE_MX) /* 3D/MX/IX seem to set up the tile stride differently */
@@ -784,7 +784,7 @@ static void SAVAGEDRISetupTiledSurfaceRegs( SavagePtr psav )
          	value |= 3<<30;
       	    }
 
-	    OUTREG(TILED_SURFACE_REGISTER_0, value|(pSAVAGEDRI->frontOffset) ); /* front */ 
+	    OUTREG(TILED_SURFACE_REGISTER_0, value|(pSAVAGEDRI->frontOffset) ); /* front */
 	    OUTREG(TILED_SURFACE_REGISTER_1, value|(pSAVAGEDRI->backOffset) ); /* back  */
 	    OUTREG(TILED_SURFACE_REGISTER_2, value|(pSAVAGEDRI->depthOffset) ); /* depth */
       } else {
@@ -882,19 +882,19 @@ Bool SAVAGEDRIFinishScreenInit( ScreenPtr pScreen )
    pSAVAGEDRI->sarea_priv_offset = sizeof(XF86DRISAREARec);
 
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]pSAVAGEDRIServer:\n" );
-   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	reserved_map_agpstart:0x%08x\n",pSAVAGEDRIServer->reserved_map_agpstart); 
+   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	reserved_map_agpstart:0x%08x\n",pSAVAGEDRIServer->reserved_map_agpstart);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	reserved_map_idx:0x%08x\n",pSAVAGEDRIServer->reserved_map_idx);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	sarea_priv_offset:0x%08x\n",pSAVAGEDRIServer->sarea_priv_offset);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	chipset:0x%08x\n",pSAVAGEDRIServer->chipset);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	sgram:0x%08x\n",pSAVAGEDRIServer->sgram);
-   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	frontbufferSize:0x%08x\n",pSAVAGEDRIServer->frontbufferSize);  
-   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	frontOffset:0x%08x\n",pSAVAGEDRIServer->frontOffset);  
+   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	frontbufferSize:0x%08x\n",pSAVAGEDRIServer->frontbufferSize);
+   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	frontOffset:0x%08x\n",pSAVAGEDRIServer->frontOffset);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	frontPitch:0x%08x\n",pSAVAGEDRIServer->frontPitch);
-   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	backbufferSize:0x%08x\n",pSAVAGEDRIServer->backbufferSize);  
-   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	backOffset:0x%08x\n",pSAVAGEDRIServer->backOffset);  
+   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	backbufferSize:0x%08x\n",pSAVAGEDRIServer->backbufferSize);
+   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	backOffset:0x%08x\n",pSAVAGEDRIServer->backOffset);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	backPitch:0x%08x\n",pSAVAGEDRIServer->backPitch);
-   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	depthbufferSize:0x%08x\n",pSAVAGEDRIServer->depthbufferSize);  
-   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	depthOffset:0x%08x\n",pSAVAGEDRIServer->depthOffset);  
+   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	depthbufferSize:0x%08x\n",pSAVAGEDRIServer->depthbufferSize);
+   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	depthOffset:0x%08x\n",pSAVAGEDRIServer->depthOffset);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	depthPitch:0x%08x\n",pSAVAGEDRIServer->depthPitch);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	textureOffset:0x%08x\n",pSAVAGEDRIServer->textureOffset);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	textureSize:0x%08x\n",pSAVAGEDRIServer->textureSize);
@@ -921,13 +921,13 @@ Bool SAVAGEDRIFinishScreenInit( ScreenPtr pScreen )
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	agpTextures:size:0x%08x\n",pSAVAGEDRIServer->agpTextures.size);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	apgTextures:map:0x%08lx\n",(unsigned long)pSAVAGEDRIServer->agpTextures.map);
 
-   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	logAgpTextureGranularity:0x%08x\n",pSAVAGEDRIServer->logAgpTextureGranularity); 
+   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	logAgpTextureGranularity:0x%08x\n",pSAVAGEDRIServer->logAgpTextureGranularity);
 
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	cmdDma:handle:0x%08lx\n",(unsigned long)pSAVAGEDRIServer->cmdDma.handle);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	cmdDma:offset:0x%08x\n",pSAVAGEDRIServer->cmdDma.offset);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	cmdDma:size:0x%08x\n",pSAVAGEDRIServer->cmdDma.size);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	cmdDma:map:0x%08lx\n",(unsigned long)pSAVAGEDRIServer->cmdDma.map);
-   
+
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]pSAVAGEDRI:\n" );
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	chipset:0x%08x\n",pSAVAGEDRI->chipset );
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	width:0x%08x\n",pSAVAGEDRI->width );
@@ -940,13 +940,13 @@ Bool SAVAGEDRIFinishScreenInit( ScreenPtr pScreen )
 
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	bufferSize:%u\n",pSAVAGEDRI->bufferSize );
 
-   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	frontbufferSize:0x%08x\n",pSAVAGEDRI->frontbufferSize);  
+   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	frontbufferSize:0x%08x\n",pSAVAGEDRI->frontbufferSize);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	frontOffset:0x%08x\n",pSAVAGEDRI->frontOffset );
 
-   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	backbufferSize:0x%08x\n",pSAVAGEDRI->backbufferSize);     
+   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	backbufferSize:0x%08x\n",pSAVAGEDRI->backbufferSize);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	backOffset:0x%08x\n",pSAVAGEDRI->backOffset );
 
-   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	depthbufferSize:0x%08x\n",pSAVAGEDRI->depthbufferSize);  
+   xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	depthbufferSize:0x%08x\n",pSAVAGEDRI->depthbufferSize);
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	depthOffset:0x%08x\n",pSAVAGEDRI->depthOffset );
 
    xf86DrvMsg( pScrn->scrnIndex, X_INFO, "[junkers]	textureOffset:0x%08x\n",pSAVAGEDRI->textureOffset );
@@ -1008,13 +1008,13 @@ void SAVAGEDRICloseScreen( ScreenPtr pScreen )
    }
 
    if ( pSAVAGEDRIServer->agpXVideo.map ) {
-      drmUnmap( pSAVAGEDRIServer->agpXVideo.map, 
+      drmUnmap( pSAVAGEDRIServer->agpXVideo.map,
                 pSAVAGEDRIServer->agpXVideo.size );
       pSAVAGEDRIServer->agpXVideo.map = NULL;
    }
 
    if ( pSAVAGEDRIServer->agpTextures.map ) {
-      drmUnmap( pSAVAGEDRIServer->agpTextures.map, 
+      drmUnmap( pSAVAGEDRIServer->agpTextures.map,
                 pSAVAGEDRIServer->agpTextures.size );
       pSAVAGEDRIServer->agpTextures.map = NULL;
    }
@@ -1271,10 +1271,10 @@ SAVAGEDRIMoveBuffers(WindowPtr pParent, DDXPointRec ptOldOrg,
 	exaMarkSync(pScreen);
 }
 
-static void 
+static void
 SAVAGEDRISetupForScreenToScreenCopy(
     ScrnInfoPtr pScrn,
-    int xdir, 
+    int xdir,
     int ydir,
     int rop,
     unsigned planemask,
@@ -1296,7 +1296,7 @@ SAVAGEDRISetupForScreenToScreenCopy(
 
 }
 
-static void 
+static void
 SAVAGEDRISubsequentScreenToScreenCopy(
     ScrnInfoPtr pScrn,
     int x1,
@@ -1325,7 +1325,7 @@ SAVAGEDRISubsequentScreenToScreenCopy(
 
     psav->WaitQueue(psav,6);
     BCI_SEND(psav->SavedBciCmd);
-    if (psav->SavedBgColor != -1) 
+    if (psav->SavedBgColor != -1)
 	BCI_SEND(psav->SavedBgColor);
     BCI_SEND(BCI_X_Y(x1, y1));
     BCI_SEND(BCI_X_Y(x2, y2));
@@ -1366,7 +1366,7 @@ SAVAGEDRIOpenFullScreen(ScreenPtr pScreen)
   {
       WidthinTiles = (pSAVAGEDRI->width+31)>>5;
       TileStride = (pSAVAGEDRI->width+31)&(~31);
-  }  
+  }
 
   /* set primary stream stride */
   {

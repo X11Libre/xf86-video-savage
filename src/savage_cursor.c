@@ -49,7 +49,7 @@ static void SavageSetCursorColors(ScrnInfoPtr pScrn, int bg, int fg);
 
 
 /*
- * Read/write to the DAC via MMIO 
+ * Read/write to the DAC via MMIO
  */
 
 #define inCRReg(reg) (VGAHWPTR(pScrn))->readCrtc( VGAHWPTR(pScrn), reg )
@@ -57,8 +57,8 @@ static void SavageSetCursorColors(ScrnInfoPtr pScrn, int bg, int fg);
 #define inSRReg(reg) (VGAHWPTR(pScrn))->readSeq( VGAHWPTR(pScrn), reg )
 #define outSRReg(reg, val) (VGAHWPTR(pScrn))->writeSeq( VGAHWPTR(pScrn), reg, val )
 
-/* 
- * certain HW cursor operations seem 
+/*
+ * certain HW cursor operations seem
  * to require a delay to prevent lockups.
  */
 #define waitHSync(n) { \
@@ -67,7 +67,7 @@ static void SavageSetCursorColors(ScrnInfoPtr pScrn, int bg, int fg);
 			 while (inStatus1() & 0x01){};\
                          while (!(inStatus1() & 0x01)){};\
                         } \
-                      } 
+                      }
 #define MAX_CURS 64
 
 /*
@@ -76,7 +76,7 @@ static void SavageSetCursorColors(ScrnInfoPtr pScrn, int bg, int fg);
  * the HW cursor position.
  */
 
-Bool 
+Bool
 SavageHWCursorInit(ScreenPtr pScreen)
 {
     ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
@@ -84,7 +84,7 @@ SavageHWCursorInit(ScreenPtr pScreen)
     xf86CursorInfoPtr infoPtr;
 
     infoPtr = xf86CreateCursorInfoRec();
-    if(!infoPtr) 
+    if(!infoPtr)
         return FALSE;
 
     psav->CursorInfoRec = infoPtr;
@@ -97,11 +97,11 @@ SavageHWCursorInit(ScreenPtr pScreen)
 		     HARDWARE_CURSOR_BIT_ORDER_MSBFIRST |
 	             HARDWARE_CURSOR_INVERT_MASK;
     /*
-     * With streams engine the Cursor seems to be ALWAYS TrueColor 
+     * With streams engine the Cursor seems to be ALWAYS TrueColor
      *except at least the Savage4
      */
     if (psav->Chipset != S3_SAVAGE4)
-	infoPtr->Flags |= HARDWARE_CURSOR_TRUECOLOR_AT_8BPP; 
+	infoPtr->Flags |= HARDWARE_CURSOR_TRUECOLOR_AT_8BPP;
 
     infoPtr->SetCursorColors = SavageSetCursorColors;
     infoPtr->SetCursorPosition = SavageSetCursorPosition;
@@ -189,7 +189,7 @@ SavageLoadCursorImage(
 static void
 SavageSetCursorPosition(
      ScrnInfoPtr pScrn,
-     int x, 
+     int x,
      int y)
 {
     SavagePtr psav = SAVPTR(pScrn);
@@ -253,7 +253,7 @@ SavageSetCursorPosition(
 
 }
 
-static void 
+static void
 SavageSetCursorColors(
     ScrnInfoPtr pScrn,
     int bg,
@@ -281,7 +281,7 @@ SavageSetCursorColors(
 	    outCRReg(0x4b, bg >> 8);
 	    outCRReg(0x4b, bg >> 16);
 	    SelectIGA1();
-	} else {      
+	} else {
 	    /* Reset the cursor color stack pointer */
 	    inCRReg(0x45);
 	    /* Write low, mid, high bytes - foreground */

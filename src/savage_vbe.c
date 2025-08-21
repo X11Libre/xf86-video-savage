@@ -9,7 +9,7 @@
 #define iabs(a)	((int)(a)>0?(a):(-(a)))
 
 #if X_BYTE_ORDER == X_LITTLE_ENDIAN
-#define B_O16(x)  (x) 
+#define B_O16(x)  (x)
 #define B_O32(x)  (x)
 #else
 #define B_O16(x)  ((((x) & 0xff) << 8) | (((x) & 0xff) >> 8))
@@ -63,7 +63,7 @@ SavageSetVESAModeCrtc1(SavagePtr psav, int n, int refresh)
     xf86Msg(X_INFO,"SavageSetVESAModeCrtc1:mode=0x%x,refresh=%dHZ\n",n,refresh);
 
     SavageClearVM86Regs(psav->pVbe->pInt10);
-    
+
     /* set active displays. */
     psav->pVbe->pInt10->ax = S3_EXTBIOS_INFO;
     psav->pVbe->pInt10->bx = S3_SET_ACTIVE_DISP;
@@ -72,9 +72,9 @@ SavageSetVESAModeCrtc1(SavagePtr psav, int n, int refresh)
     else
     	psav->pVbe->pInt10->cx = 0x83; /* lcd, crt, duoview */
     xf86ExecX86int10(psav->pVbe->pInt10);
-    
+
     SavageClearVM86Regs(psav->pVbe->pInt10);
-    
+
     /* Establish the refresh rate for this mode. */
     psav->pVbe->pInt10->ax = S3_EXTBIOS_INFO;
     psav->pVbe->pInt10->bx = S3_SET_REFRESH;
@@ -86,11 +86,11 @@ SavageSetVESAModeCrtc1(SavagePtr psav, int n, int refresh)
     OUTREG8 (SEQ_ADDRESS_REG,0x01);
     byte = INREG8(SEQ_DATA_REG) | 0x20;
     OUTREG8(SEQ_DATA_REG,byte);
-    
+
     psav->pVbe->pInt10->ax = BIOS_SET_VBE_MODE;
     psav->pVbe->pInt10->bx = n;
     xf86ExecX86int10(psav->pVbe->pInt10);
-    
+
 }
 
 void
@@ -102,7 +102,7 @@ SavageSetVESAModeCrtc2( SavagePtr psav, int n, int refresh )
     SavageClearVM86Regs(psav->pVbe->pInt10);
 
     UnLockExtRegs();
-    
+
     psav->pVbe->pInt10->ax = S3_EXTBIOS_INFO;
     psav->pVbe->pInt10->bx = S3_ALT_SET_ACTIVE_DISP;
     if (psav->TvOn)
@@ -254,8 +254,8 @@ SavageGetBIOSModeTable( SavagePtr psav, int iDepth )
 
     nModes = SavageGetBIOSModes( psav, vbe, iDepth, NULL );
 
-    pTable = (SavageModeTablePtr) 
-	calloc( 1, sizeof(SavageModeTableRec) + 
+    pTable = (SavageModeTablePtr)
+	calloc( 1, sizeof(SavageModeTableRec) +
 		    (nModes-1) * sizeof(SavageModeEntry) );
     if( pTable ) {
 	pTable->NumModes = nModes;
@@ -269,7 +269,7 @@ SavageGetBIOSModeTable( SavagePtr psav, int iDepth )
 
 
 unsigned short
-SavageGetBIOSModes( 
+SavageGetBIOSModes(
     SavagePtr psav,
     VbeInfoBlock *vbe,
     int iDepth,
@@ -288,14 +288,14 @@ SavageGetBIOSModes(
 	return 0;
     }
     vmib = (struct vbe_mode_info_block *) vbeLinear;
-    
+
     for (mode_list = vbe->VideoModePtr; *mode_list != 0xffff; mode_list++) {
 
 	/*
 	 * This is a HACK to work around what I believe is a BUG in the
 	 * Toshiba Satellite BIOSes in 08/2000 and 09/2000.  The BIOS
 	 * table for 1024x600 says it has six refresh rates, when in fact
-	 * it only has 3.  When I ask for rate #4, the BIOS goes into an 
+	 * it only has 3.  When I ask for rate #4, the BIOS goes into an
 	 * infinite loop until the user interrupts it, usually by pressing
 	 * Ctrl-Alt-F1.  For now, we'll just punt everything with a VESA
 	 * number greater than or equal to 0200.
@@ -316,7 +316,7 @@ SavageGetBIOSModes(
 
 	xf86ExecX86int10( psav->pVbe->pInt10 );
 
-	if( 
+	if(
 	   (vmib->bits_per_pixel == iDepth) &&
 	   (
 	      (vmib->memory_model == VBE_MODEL_256) ||
@@ -338,7 +338,7 @@ SavageGetBIOSModes(
 		s3vModeTable->Width = vmib->x_resolution;
 		s3vModeTable->Height = vmib->y_resolution;
 		s3vModeTable->VesaMode = *mode_list;
-		
+
 		/* Query the refresh rates at this mode. */
 
 		psav->pVbe->pInt10->cx = *mode_list;
@@ -351,7 +351,7 @@ SavageGetBIOSModes(
 			if( s3vModeTable->RefreshRate )
 			{
 			    s3vModeTable->RefreshRate = (unsigned char *)
-				realloc( 
+				realloc(
 				    s3vModeTable->RefreshRate,
 				    (iRefresh+8) * sizeof(unsigned char)
 				);
@@ -359,7 +359,7 @@ SavageGetBIOSModes(
 			else
 			{
 			    s3vModeTable->RefreshRate = (unsigned char *)
-				calloc( 
+				calloc(
 				    (iRefresh+8),
 				    sizeof(unsigned char)
 				);
@@ -392,13 +392,13 @@ ModeStatus SavageMatchBiosMode(ScrnInfoPtr pScrn,int width,int height,int refres
 {
     SavageModeEntryPtr pmt;
     Bool found = FALSE;
-    SavagePtr psav = SAVPTR(pScrn);    
+    SavagePtr psav = SAVPTR(pScrn);
     int i,j;
     unsigned int chosenVesaMode = 0;
     unsigned int chosenRefresh = 0;
-    
+
     /* Scan through our BIOS list to locate the closest valid mode. */
-    
+
     /*
      * If we ever break 4GHz clocks on video boards, we'll need to
      * change this.
@@ -406,11 +406,11 @@ ModeStatus SavageMatchBiosMode(ScrnInfoPtr pScrn,int width,int height,int refres
      * now we use VRefresh directly,instead of by calculating from dot clock
      */
 
-    for( i = 0, pmt = psav->ModeTable->Modes; 
+    for( i = 0, pmt = psav->ModeTable->Modes;
 	i < psav->ModeTable->NumModes;
 	i++, pmt++ )
     {
-	if( (pmt->Width == width) && 
+	if( (pmt->Width == width) &&
 	    (pmt->Height == height) )
 	{
 	    int jDelta = 99;
@@ -444,11 +444,11 @@ ModeStatus SavageMatchBiosMode(ScrnInfoPtr pScrn,int width,int height,int refres
 
     if( found ) {
 	/* Success: we found a match in the BIOS. */
-	xf86DrvMsg(pScrn->scrnIndex, X_PROBED, 
+	xf86DrvMsg(pScrn->scrnIndex, X_PROBED,
 		  "Chose mode %x at %dHz.\n", chosenVesaMode, chosenRefresh );
         return MODE_OK;
     } else {
-	xf86DrvMsg(pScrn->scrnIndex, X_PROBED, 
+	xf86DrvMsg(pScrn->scrnIndex, X_PROBED,
 		  "No suitable BIOS mode found for %dx%d %dHz.\n",
 		  width, height, refresh);
         return MODE_NOMODE;

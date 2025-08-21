@@ -55,5 +55,5 @@ savage_drv_la_SOURCES += \
          savage_hwmc.c \
          savage_dri.c \
          savage_dri.h \
-         savage_dripriv.h 
+         savage_dripriv.h
 endif
