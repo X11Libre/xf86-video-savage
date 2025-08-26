@@ -1372,29 +1372,9 @@ SavageInitAccel(ScreenPtr pScreen)
 		tiledWidth;
 	}
 
-        /* CR47983, XvMC do not work on system with frame buffer less than 32MB.
-         * VBE reports frame buffer size a little less than 16MB, this makes the condition
-         *   turns out FALSE.
-         * Now just reduce the level to 14.5MB, things should be OK, while the hwmc frame buffer layout
-         *    calculation need more understanding and should be fixed.
-         */
-        /*if total memory is less than 16M, there is no HWMC support */
-        if((psav->videoRambytes < /*16*/(14*1024+512)*1024L) || psav->bDisableXvMC)
-        {
-            psav->hwmcOffset = 0;
-            psav->hwmcSize = 0;
-        }
-        else
-        {
-            psav->hwmcSize = (10*1024+512)*1024;  /* HWMC needs 10MB FB */
-            psav->hwmcOffset = (psav->videoRambytes - 0x2000 - psav->hwmcSize) & 
-                ~SAVAGE_BUFFER_ALIGN; 
-            if (psav->hwmcOffset < bufferSize) {
-                /* If hwmc buffer will lay in on-screen buffer. */
-                psav->hwmcSize = 0;
-                psav->hwmcOffset = 0;
-            }
-        }
+        /* no XvMC anymore */
+        psav->hwmcOffset = 0;
+        psav->hwmcSize = 0;
 
         /* CR48438: Title: "Lots of garbage appear on the background when 
          *  drag the DVD player XINE window at 1024x768 or higher mode."

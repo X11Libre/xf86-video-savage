@@ -270,7 +270,6 @@ typedef enum {
     ,OPTION_FORCE_INIT
     ,OPTION_OVERLAY
     ,OPTION_T_KEY
-    ,OPTION_DISABLE_XVMC
     ,OPTION_DISABLE_TILE
     ,OPTION_DISABLE_COB
     ,OPTION_BCI_FOR_XV
@@ -304,7 +303,6 @@ static const OptionInfoRec SavageOptions[] =
     { OPTION_OVERLAY,	"Overlay",	OPTV_ANYSTR, {0}, FALSE },
     { OPTION_T_KEY,	"TransparencyKey",	OPTV_ANYSTR, {0}, FALSE },
     { OPTION_FORCE_INIT,   "ForceInit",   OPTV_BOOLEAN, {0}, FALSE },
-    { OPTION_DISABLE_XVMC, "DisableXVMC", OPTV_BOOLEAN, {0}, FALSE },
     { OPTION_DISABLE_TILE, "DisableTile", OPTV_BOOLEAN, {0}, FALSE },
     { OPTION_DISABLE_COB,  "DisableCOB",  OPTV_BOOLEAN, {0}, FALSE },
     { OPTION_BCI_FOR_XV,   "BCIforXv",    OPTV_BOOLEAN, {0}, FALSE },
@@ -1660,15 +1658,6 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
         xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
                    "Option: %s Tile Mode and Program it \n",(psav->bDisableTile?"Disable":"Enable"));
     }
-
-#ifdef SAVAGEDRI
-    /* disabled by default...doesn't seem to work */
-    psav->bDisableXvMC = TRUE; /* if you want to free up more mem for DRI,etc. */
-    if (xf86GetOptValBool(psav->Options, OPTION_DISABLE_XVMC, &psav->bDisableXvMC)) {
-        xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
-                   "Option: %s Hardware XvMC support\n",(psav->bDisableXvMC?"Disable":"Enable"));
-    }
-#endif
 
     psav->disableCOB = FALSE; /* if you are having problems on savage4+ */
     if (xf86GetOptValBool(psav->Options, OPTION_DISABLE_COB, &psav->disableCOB)) {
@@ -3437,12 +3426,7 @@ static Bool SavageScreenInit(ScreenPtr pScreen, int argc, char **argv)
 #endif
 
 #ifdef SAVAGEDRI
-    if ((psav->directRenderingEnabled) && (!psav->bDisableXvMC)) {
-        if (SAVAGEInitMC(pScreen))
-            xf86DrvMsg(pScrn->scrnIndex,X_CONFIG,"XvMC is enabled\n");
-        else
-            xf86DrvMsg(pScrn->scrnIndex,X_CONFIG,"XvMC is not enabled\n");
-    }
+    xf86DrvMsg(pScrn->scrnIndex,X_CONFIG,"XvMC is not enabled\n");
 
     if (!psav->directRenderingEnabled && psav->AGPforXv) {
         xf86DrvMsg(pScrn->scrnIndex,X_ERROR,"AGPforXV requires DRI to be enabled.\n");
