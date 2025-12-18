@@ -1,7 +1,4 @@
-
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "savage_driver.h"
 #include "savage_vbe.h"

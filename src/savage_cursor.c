@@ -36,10 +36,7 @@
  * \author Jon Tombs
  * \author Tim Roberts
  */
-
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include "savage_driver.h"
 

@@ -34,10 +34,7 @@
  *
  * \todo Add credits for the 3.3.x authors.
  */
-
-#ifdef HAVE_CONFIG_H
 #include "config.h"
-#endif
 
 #include <unistd.h>
 #include <errno.h>
