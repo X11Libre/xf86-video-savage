@@ -334,8 +334,6 @@ _X_EXPORT DriverRec SAVAGE =
 #endif
 };
 
-#ifdef XFree86LOADER
-
 static MODULESETUPPROTO(SavageSetup);
 
 static XF86ModuleVersionInfo SavageVersRec = {
@@ -372,8 +370,6 @@ static pointer SavageSetup(pointer module, pointer opts, int *errmaj,
 	return NULL;
     }
 }
-
-#endif /* XFree86LOADER */
 
 static SavageEntPtr SavageEntPriv(ScrnInfoPtr pScrn)
 {
