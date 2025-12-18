@@ -33,18 +33,11 @@
 #include <string.h>
 #include <math.h>
 
-#ifdef XSERVER_LIBPCIACCESS
 #include <pciaccess.h>
 #define VENDOR_ID(p)      (p)->vendor_id
 #define DEVICE_ID(p)      (p)->device_id
 #define SUBSYS_ID(p)      (p)->subdevice_id
 #define CHIP_REVISION(p)  (p)->revision
-#else
-#define VENDOR_ID(p)      (p)->vendor
-#define DEVICE_ID(p)      (p)->chipType
-#define SUBSYS_ID(p)      (p)->subsysCard
-#define CHIP_REVISION(p)  (p)->chipRev
-#endif
 
 #define MODE_24 24
 
@@ -287,13 +280,8 @@ typedef struct _StatInfo {
 } StatInfoRec,*StatInfoPtr;
 
 struct savage_region {
-#ifdef XSERVER_LIBPCIACCESS
     pciaddr_t       base;
     pciaddr_t       size;
-#else
-    unsigned long   base;
-    unsigned long   size;
-#endif
     void          * memory;
 };
 
@@ -384,12 +372,7 @@ typedef struct _Savage {
     int			TVSizeY;
 
     CloseScreenProcPtr	CloseScreen;
-#ifdef XSERVER_LIBPCIACCESS
     struct pci_device * PciInfo;
-#else
-    pciVideoPtr		PciInfo;
-    PCITAG		PciTag;
-#endif
     int			Chipset;
     int			ChipId;
     int			ChipRev;

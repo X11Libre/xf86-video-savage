@@ -68,13 +68,8 @@ static void SavageDisableMMIO(ScrnInfoPtr pScrn);
 
 static const OptionInfoRec * SavageAvailableOptions(int chipid, int busid);
 static void SavageIdentify(int flags);
-#ifdef XSERVER_LIBPCIACCESS
 static Bool SavagePciProbe(DriverPtr drv, int entity_num,
 			   struct pci_device *dev, intptr_t match_data);
-#else
-static Bool SavageProbe(DriverPtr drv, int flags);
-static int LookupChipID(PciChipsets* pset, int ChipID);
-#endif
 static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags);
 
 static Bool SavageEnterVT(ScrnInfoPtr pScrn);
@@ -134,7 +129,6 @@ extern ScrnInfoPtr gpScrn;
 
 int gSavageEntityIndex = -1;
 
-#ifdef XSERVER_LIBPCIACCESS
 #define SAVAGE_DEVICE_MATCH(d, i) \
     { 0x5333, (d), PCI_MATCH_ANY, PCI_MATCH_ANY, 0, 0, (i) }
 
@@ -165,7 +159,6 @@ static const struct pci_id_match savage_device_match[] = {
 
     { 0, 0, 0 },
 };
-#endif
 
 /* Supported chipsets */
 
@@ -207,37 +200,6 @@ static SymTabRec SavageChipsets[] = {
     { S3_SUPERSAVAGE,   "SuperSavage" },
     { -1,		NULL }
 };
-
-#ifndef XSERVER_LIBPCIACCESS
-/* This table maps a PCI device ID to a chipset family identifier. */
-
-static PciChipsets SavagePciChipsets[] = {
-    { S3_SAVAGE3D,	PCI_CHIP_SAVAGE3D,	RES_SHARED_VGA },
-    { S3_SAVAGE3D,	PCI_CHIP_SAVAGE3D_MV, 	RES_SHARED_VGA },
-    { S3_SAVAGE4,	PCI_CHIP_SAVAGE4,	RES_SHARED_VGA },
-    { S3_SAVAGE2000,	PCI_CHIP_SAVAGE2000,	RES_SHARED_VGA },
-    { S3_SAVAGE_MX,	PCI_CHIP_SAVAGE_MX_MV,	RES_SHARED_VGA },
-    { S3_SAVAGE_MX,	PCI_CHIP_SAVAGE_MX,	RES_SHARED_VGA },
-    { S3_SAVAGE_MX,	PCI_CHIP_SAVAGE_IX_MV,	RES_SHARED_VGA },
-    { S3_SAVAGE_MX,	PCI_CHIP_SAVAGE_IX,	RES_SHARED_VGA },
-    { S3_PROSAVAGE,	PCI_CHIP_PROSAVAGE_PM,	RES_SHARED_VGA },
-    { S3_PROSAVAGE,	PCI_CHIP_PROSAVAGE_KM,	RES_SHARED_VGA },
-    { S3_TWISTER,	PCI_CHIP_S3TWISTER_P,	RES_SHARED_VGA },
-    { S3_TWISTER,	PCI_CHIP_S3TWISTER_K,	RES_SHARED_VGA },
-    { S3_PROSAVAGEDDR,	PCI_CHIP_PROSAVAGE_DDR,	RES_SHARED_VGA },
-    { S3_PROSAVAGEDDR,	PCI_CHIP_PROSAVAGE_DDRK,	RES_SHARED_VGA },
-    { S3_SUPERSAVAGE,	PCI_CHIP_SUPSAV_MX128,	RES_SHARED_VGA },
-    { S3_SUPERSAVAGE,	PCI_CHIP_SUPSAV_MX64,	RES_SHARED_VGA },
-    { S3_SUPERSAVAGE,	PCI_CHIP_SUPSAV_MX64C,	RES_SHARED_VGA },
-    { S3_SUPERSAVAGE,	PCI_CHIP_SUPSAV_IX128SDR,	RES_SHARED_VGA },
-    { S3_SUPERSAVAGE,	PCI_CHIP_SUPSAV_IX128DDR,	RES_SHARED_VGA },
-    { S3_SUPERSAVAGE,	PCI_CHIP_SUPSAV_IX64SDR,	RES_SHARED_VGA },
-    { S3_SUPERSAVAGE,	PCI_CHIP_SUPSAV_IX64DDR,	RES_SHARED_VGA },
-    { S3_SUPERSAVAGE,	PCI_CHIP_SUPSAV_IXCSDR,	RES_SHARED_VGA },
-    { S3_SUPERSAVAGE,	PCI_CHIP_SUPSAV_IXCDDR,	RES_SHARED_VGA },
-    { -1,		-1,			RES_UNDEFINED }
-};
-#endif
 
 typedef enum {
      OPTION_PCI_BURST
@@ -318,20 +280,13 @@ _X_EXPORT DriverRec SAVAGE =
     SAVAGE_VERSION,
     SAVAGE_DRIVER_NAME,
     SavageIdentify,
-#ifdef XSERVER_LIBPCIACCESS
     NULL,
-#else
-    SavageProbe,
-#endif
     SavageAvailableOptions,
     NULL,
     0,
     NULL,
-
-#ifdef XSERVER_LIBPCIACCESS
     savage_device_match,
     SavagePciProbe
-#endif
 };
 
 static MODULESETUPPROTO(SavageSetup);
@@ -651,8 +606,6 @@ static void SavageIdentify(int flags)
 		      SavageChips);
 }
 
-
-#ifdef XSERVER_LIBPCIACCESS
 static Bool SavagePciProbe(DriverPtr drv, int entity_num,
 			   struct pci_device *dev, intptr_t match_data)
 {
@@ -725,132 +678,6 @@ static Bool SavagePciProbe(DriverPtr drv, int entity_num,
 
     return (pScrn != NULL);
 }
-
-#else
-
-static Bool SavageProbe(DriverPtr drv, int flags)
-{
-    int i;
-    GDevPtr *devSections = NULL;
-    int *usedChips;
-    int numDevSections;
-    int numUsed;
-    Bool foundScreen = FALSE;
-
-    /* sanity checks */
-    if ((numDevSections = xf86MatchDevice("savage", &devSections)) <= 0)
-	return FALSE;
-    if (xf86GetPciVideoInfo() == NULL) {
-        if (devSections)
-	    free(devSections);
-        return FALSE;
-    }
-
-    numUsed = xf86MatchPciInstances("SAVAGE", PCI_VENDOR_S3,
-				    SavageChipsets, SavagePciChipsets,
-				    devSections, numDevSections, drv,
-				    &usedChips);
-    if (devSections)
-	free(devSections);
-    devSections = NULL;
-    if (numUsed <= 0)
-	return FALSE;
-
-    if (flags & PROBE_DETECT)
-	foundScreen = TRUE;
-    else
-	for (i=0; i<numUsed; i++) {
-            EntityInfoPtr pEnt = xf86GetEntityInfo(usedChips[i]);;
-            ScrnInfoPtr pScrn = xf86ConfigPciEntity(NULL, 0, usedChips[i],
-						    NULL, RES_SHARED_VGA,
-						    NULL, NULL, NULL, NULL);
-
-            if (pScrn != NULL) {
-		SavagePtr psav;
-
- 	        pScrn->driverVersion = SAVAGE_VERSION;
-	        pScrn->driverName = SAVAGE_DRIVER_NAME;
-	        pScrn->name = "SAVAGE";
-	        pScrn->Probe = SavageProbe;
-	        pScrn->PreInit = SavagePreInit;
-	        pScrn->ScreenInit = SavageScreenInit;
-	        pScrn->SwitchMode = SavageSwitchMode;
-	        pScrn->AdjustFrame = SavageAdjustFrame;
-	        pScrn->EnterVT = SavageEnterVT;
-	        pScrn->LeaveVT = SavageLeaveVT;
-	        pScrn->FreeScreen = NULL;
-	        pScrn->ValidMode = SavageValidMode;
-	        foundScreen = TRUE;
-
-		if (!SavageGetRec(pScrn))
-		    return FALSE;
-
-		psav = SAVPTR(pScrn);
-
-		psav->PciInfo = xf86GetPciInfoForEntity(pEnt->index);
-		if (pEnt->device->chipset && *pEnt->device->chipset) {
-		    psav->Chipset = xf86StringToToken(SavageChipsets,
-						      pEnt->device->chipset);
-		} else if (pEnt->device->chipID >= 0) {
-		    psav->Chipset = LookupChipID(SavagePciChipsets,
-						 pEnt->device->chipID);
-		} else {
-		    psav->Chipset = LookupChipID(SavagePciChipsets,
-						 psav->PciInfo->chipType);
-		}
-	    }
-
-            pEnt = xf86GetEntityInfo(usedChips[i]);
-
-            /* MX, IX, SuperSavage cards support Dual-Head, mark the entity as shareable*/
-            if(pEnt->chipset == S3_SAVAGE_MX || pEnt->chipset == S3_SUPERSAVAGE)
-            {
-		DevUnion   *pPriv;
-		SavageEntPtr pSavageEnt;
-
-		xf86SetEntitySharable(usedChips[i]);
-
-		if (gSavageEntityIndex == -1)
-		    gSavageEntityIndex = xf86AllocateEntityPrivateIndex();
-
-		pPriv = xf86GetEntityPrivate(pEnt->index,
-					     gSavageEntityIndex);
-
-		if (!pPriv->ptr) {
-		    int j;
-		    int instance = xf86GetNumEntityInstances(pEnt->index);
-
-		    for (j = 0; j < instance; j++)
-			xf86SetEntityInstanceForScreen(pScrn, pEnt->index, j);
-
-		    pPriv->ptr = XNFcallocarray(1, sizeof(SavageEntRec));
-		    pSavageEnt = pPriv->ptr;
-		    pSavageEnt->HasSecondary = FALSE;
-		} else {
-		    pSavageEnt = pPriv->ptr;
-		    pSavageEnt->HasSecondary = TRUE;
-		}
-	    }
-	    free(pEnt);
-	}
-
-    free(usedChips);
-    return foundScreen;
-}
-
-static int LookupChipID( PciChipsets* pset, int ChipID )
-{
-    /* Is there a function to do this for me? */
-    while( pset->numChipset >= 0 )
-    {
-        if( pset->PCIid == ChipID )
-	    return pset->numChipset;
-	pset++;
-    }
-
-    return -1;
-}
-#endif
 
 static void SavageDoDDC(ScrnInfoPtr pScrn)
 {
@@ -1371,24 +1198,11 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     pEnt = xf86GetEntityInfo(pScrn->entityList[0]);
-#ifndef XSERVER_LIBPCIACCESS
-    if (pEnt->resources) {
-	free(pEnt);
-	SavageFreeRec(pScrn);
-	return FALSE;
-    }
-#endif
     psav->EntityIndex = pEnt->index;
 
     if (xf86LoadSubModule(pScrn, "vbe")) {
 	psav->pVbe = VBEInit(NULL, pEnt->index);
     }
-
-#ifndef XSERVER_LIBPCIACCESS
-    xf86RegisterResources(pEnt->index, NULL, ResNone);
-    xf86SetOperatingState(resVgaIo, pEnt->index, ResUnusedOpr);
-    xf86SetOperatingState(resVgaMem, pEnt->index, ResDisableOpr);
-#endif
 
     from = X_DEFAULT;
     if (pEnt->device->chipset && *pEnt->device->chipset) {
@@ -1426,81 +1240,14 @@ static Bool SavagePreInit(ScrnInfoPtr pScrn, int flags)
 
     free(pEnt);
 
-#ifndef XSERVER_LIBPCIACCESS
-    psav->PciTag = pciTag(psav->PciInfo->bus, psav->PciInfo->device,
-			  psav->PciInfo->func);
-#endif
-
-
     /* Set AGP Mode from config */
     /* We support 1X 2X and 4X  */
 #ifdef SAVAGEDRI
-#ifdef XSERVER_LIBPCIACCESS
     /* Try to read the AGP capability block from the device.  If there is
      * no AGP info, the device is PCI.
      */
 
     psav->IsPCI = (pci_device_get_agp_info(psav->PciInfo) == NULL);
-#else
-				/* AGP/PCI (FK: copied from radeon_driver.c) */
-    /* Proper autodetection of an AGP capable device requires examining
-     * PCI config registers to determine if the device implements extended
-     * PCI capabilities, and then walking the capability list as indicated
-     * in the PCI 2.2 and AGP 2.0 specifications, to determine if AGP
-     * capability is present.  The procedure is outlined as follows:
-     *
-     * 1) Test bit 4 (CAP_LIST) of the PCI status register of the device
-     *    to determine whether or not this device implements any extended
-     *    capabilities.  If this bit is zero, then the device is a PCI 2.1
-     *    or earlier device and is not AGP capable, and we can conclude it
-     *    to be a PCI device.
-     *
-     * 2) If bit 4 of the status register is set, then the device implements
-     *    extended capabilities.  There is an 8 bit wide capabilities pointer
-     *    register located at offset 0x34 in PCI config space which points to
-     *    the first capability in a linked list of extended capabilities that
-     *    this device implements.  The lower two bits of this register are
-     *    reserved and MBZ so must be masked out.
-     *
-     * 3) The extended capabilities list is formed by one or more extended
-     *    capabilities structures which are aligned on DWORD boundaries.
-     *    The first byte of the structure is the capability ID (CAP_ID)
-     *    indicating what extended capability this structure refers to.  The
-     *    second byte of the structure is an offset from the beginning of
-     *    PCI config space pointing to the next capability in the linked
-     *    list (NEXT_PTR) or NULL (0x00) at the end of the list.  The lower
-     *    two bits of this pointer are reserved and MBZ.  By examining the
-     *    CAP_ID of each capability and walking through the list, we will
-     *    either find the AGP_CAP_ID (0x02) indicating this device is an
-     *    AGP device, or we'll reach the end of the list, indicating it is
-     *    a PCI device.
-     *
-     * Mike A. Harris <mharris@redhat.com>
-     *
-     * References:
-     *	- PCI Local Bus Specification Revision 2.2, Chapter 6
-     *	- AGP Interface Specification Revision 2.0, Section 6.1.5
-     */
-
-    psav->IsPCI = TRUE;
-
-    if (pciReadLong(psav->PciTag, PCI_CMD_STAT_REG) & SAVAGE_CAP_LIST) {
-	CARD32 cap_ptr, cap_id;
-
-	cap_ptr = pciReadLong(psav->PciTag,
-			      SAVAGE_CAPABILITIES_PTR_PCI_CONFIG)
-	    & SAVAGE_CAP_PTR_MASK;
-
-	while(cap_ptr != SAVAGE_CAP_ID_NULL) {
-	    cap_id = pciReadLong(psav->PciTag, cap_ptr);
-	    if ((cap_id & 0xff) == SAVAGE_CAP_ID_AGP) {
-		psav->IsPCI = FALSE;
-		break;
-	    }
-	    cap_ptr = (cap_id >> 8) & SAVAGE_CAP_PTR_MASK;
-	}
-    }
-#endif
 
     xf86DrvMsg(pScrn->scrnIndex, X_PROBED, "%s card detected\n",
 	       (psav->IsPCI) ? "PCI" : "AGP");
@@ -2849,25 +2596,13 @@ static Bool SavageMapMem(ScrnInfoPtr pScrn)
     TRACE(("SavageMapMem()\n"));
 
     if( S3_SAVAGE3D_SERIES(psav->Chipset) ) {
-#ifdef XSERVER_LIBPCIACCESS
         psav->MmioRegion.base = SAVAGE_NEWMMIO_REGBASE_S3
             + psav->PciInfo->regions[0].base_addr;
         psav->FbRegion.base = psav->PciInfo->regions[0].base_addr;
-#else
-        psav->MmioRegion.base = SAVAGE_NEWMMIO_REGBASE_S3
-            + psav->PciInfo->memBase[0];
-        psav->FbRegion.base = psav->PciInfo->memBase[0];
-#endif
     } else {
-#ifdef XSERVER_LIBPCIACCESS
         psav->MmioRegion.base = SAVAGE_NEWMMIO_REGBASE_S4
             + psav->PciInfo->regions[0].base_addr;
         psav->FbRegion.base = psav->PciInfo->regions[1].base_addr;
-#else
-        psav->MmioRegion.base = SAVAGE_NEWMMIO_REGBASE_S4
-            + psav->PciInfo->memBase[0];
-        psav->FbRegion.base = psav->PciInfo->memBase[1];
-#endif
     }
 
     psav->MmioRegion.size = SAVAGE_NEWMMIO_REGSIZE;
@@ -2882,13 +2617,9 @@ static Bool SavageMapMem(ScrnInfoPtr pScrn)
 
     if ((psav->Chipset == S3_SUPERSAVAGE)
         || (psav->Chipset == S3_SAVAGE2000)) {
-#ifdef XSERVER_LIBPCIACCESS
         psav->ApertureRegion.base = psav->PciInfo->regions[2].base_addr;
         if (psav->ApertureRegion.size > psav->PciInfo->regions[2].size)
             psav->ApertureRegion.size = psav->PciInfo->regions[2].size;
-#else
-        psav->ApertureRegion.base = psav->PciInfo->memBase[2];
-#endif
     } else {
         psav->ApertureRegion.base = psav->FbRegion.base + 0x02000000;
     }
@@ -2896,19 +2627,11 @@ static Bool SavageMapMem(ScrnInfoPtr pScrn)
 
 
     if (psav->FbRegion.size != 0) {
-#ifdef XSERVER_LIBPCIACCESS
         err = pci_device_map_range(psav->PciInfo, psav->FbRegion.base,
                                    psav->FbRegion.size,
                                    (PCI_DEV_MAP_FLAG_WRITABLE
                                     | PCI_DEV_MAP_FLAG_WRITE_COMBINE),
                                    & psav->FbRegion.memory);
-#else
-        psav->FbRegion.memory =
-            xf86MapPciMem(pScrn->scrnIndex, VIDMEM_FRAMEBUFFER,
-                          psav->PciTag, psav->FbRegion.base,
-                          psav->FbRegion.size);
-        err = (psav->FbRegion.memory == NULL) ? errno : 0;
-#endif
         if (err) {
             xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
                        "Internal error: could not map framebuffer range (%d, %s).\n",
@@ -2922,19 +2645,11 @@ static Bool SavageMapMem(ScrnInfoPtr pScrn)
     }
 
     if (psav->ApertureRegion.memory == NULL) {
-#ifdef XSERVER_LIBPCIACCESS
         err = pci_device_map_range(psav->PciInfo, psav->ApertureRegion.base,
                                    psav->ApertureRegion.size,
                                    (PCI_DEV_MAP_FLAG_WRITABLE
                                     | PCI_DEV_MAP_FLAG_WRITE_COMBINE),
                                    & psav->ApertureRegion.memory);
-#else
-        psav->ApertureRegion.memory =
-            xf86MapPciMem(pScrn->scrnIndex, VIDMEM_FRAMEBUFFER,
-                          psav->PciTag, psav->ApertureRegion.base,
-                          psav->ApertureRegion.size);
-        err = (psav->ApertureRegion.memory == NULL) ? errno : 0;
-#endif
         if (err) {
             xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
                        "Internal error: could not map aperture range (%d, %s).\n",
@@ -2948,18 +2663,10 @@ static Bool SavageMapMem(ScrnInfoPtr pScrn)
     }
 
     if (psav->MmioRegion.memory == NULL) {
-#ifdef XSERVER_LIBPCIACCESS
         err = pci_device_map_range(psav->PciInfo, psav->MmioRegion.base,
                                    psav->MmioRegion.size,
                                    (PCI_DEV_MAP_FLAG_WRITABLE),
                                    & psav->MmioRegion.memory);
-#else
-        psav->MmioRegion.memory =
-            xf86MapPciMem(pScrn->scrnIndex, VIDMEM_MMIO,
-                          psav->PciTag, psav->MmioRegion.base,
-                          psav->MmioRegion.size);
-        err = (psav->MmioRegion.memory == NULL) ? errno : 0;
-#endif
         if (err) {
             xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
                        "Internal error: could not map MMIO range (%d, %s).\n",
@@ -2992,14 +2699,9 @@ static void SavageUnmapMem(ScrnInfoPtr pScrn, int All)
     SavageDisableMMIO(pScrn);
 
     if (All && (psav->MmioRegion.memory != NULL)) {
-#ifdef XSERVER_LIBPCIACCESS
         pci_device_unmap_range(psav->PciInfo,
                                psav->MmioRegion.memory,
                                psav->MmioRegion.size);
-#else
-        xf86UnMapVidMem(pScrn->scrnIndex, (pointer)psav->MapBase,
-                        SAVAGE_NEWMMIO_REGSIZE);
-#endif
 
         psav->MmioRegion.memory = NULL;
         psav->MapBase = 0;
@@ -3007,25 +2709,15 @@ static void SavageUnmapMem(ScrnInfoPtr pScrn, int All)
     }
 
     if (psav->FbRegion.memory != NULL) {
-#ifdef XSERVER_LIBPCIACCESS
         pci_device_unmap_range(psav->PciInfo,
                                psav->FbRegion.memory,
                                psav->FbRegion.size);
-#else
-        xf86UnMapVidMem(pScrn->scrnIndex, (pointer)psav->FbRegion.base,
-                        psav->FbRegion.size);
-#endif
     }
 
     if (psav->ApertureRegion.memory != NULL) {
-#ifdef XSERVER_LIBPCIACCESS
         pci_device_unmap_range(psav->PciInfo,
                                psav->ApertureRegion.memory,
                                psav->ApertureRegion.size);
-#else
-        xf86UnMapVidMem(pScrn->scrnIndex, (pointer)psav->ApertureRegion.base,
-                        psav->ApertureRegion.size);
-#endif
     }
 
     psav->FbRegion.memory = NULL;

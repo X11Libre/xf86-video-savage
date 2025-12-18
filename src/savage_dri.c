@@ -598,11 +598,7 @@ Bool SAVAGEDRIScreenInit( ScreenPtr pScreen )
       sprintf(pDRIInfo->busIdString,
               "PCI:%d:%d:%d",
               psav->PciInfo->bus,
-#ifdef XSERVER_LIBPCIACCESS
               psav->PciInfo->dev,
-#else
-              psav->PciInfo->device,
-#endif
               psav->PciInfo->func);
    }
    pDRIInfo->ddxDriverMajorVersion = SAVAGE_VERSION_MAJOR;
