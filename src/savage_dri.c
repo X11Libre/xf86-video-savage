@@ -98,13 +98,13 @@ static void SAVAGEDestroyContext( ScreenPtr pScreen, drm_context_t hwContext,
     psav->DRIrunning--;
 }
 
-static void SAVAGEWakeupHandler(WAKEUPHANDLER_ARGS_DECL)
+static void SAVAGEWakeupHandler(ScreenPtr pScreen, int result)
 {
    ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
    SavagePtr psav = SAVPTR(pScrn);
 
    psav->pDRIInfo->wrap.WakeupHandler = psav->coreWakeupHandler;
-   (*psav->pDRIInfo->wrap.WakeupHandler) (WAKEUPHANDLER_ARGS);
+   (*psav->pDRIInfo->wrap.WakeupHandler) (pScreen, result);
    psav->pDRIInfo->wrap.WakeupHandler = SAVAGEWakeupHandler;
    psav->LockHeld = 1;
    if (psav->ShadowStatus) {
@@ -116,7 +116,7 @@ static void SAVAGEWakeupHandler(WAKEUPHANDLER_ARGS_DECL)
    /* FK: this flag doesn't seem to be used. */
 }
 
-static void SAVAGEBlockHandler(BLOCKHANDLER_ARGS_DECL)
+static void SAVAGEBlockHandler(ScreenPtr pScreen, pointer pTimeout)
 {
    ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
    SavagePtr psav = SAVPTR(pScrn);
@@ -130,7 +130,7 @@ static void SAVAGEBlockHandler(BLOCKHANDLER_ARGS_DECL)
    }
    psav->LockHeld = 0;
    psav->pDRIInfo->wrap.BlockHandler = psav->coreBlockHandler;
-   (*psav->pDRIInfo->wrap.BlockHandler) (BLOCKHANDLER_ARGS);
+   (*psav->pDRIInfo->wrap.BlockHandler) (pScreen, pTimeout);
    psav->pDRIInfo->wrap.BlockHandler = SAVAGEBlockHandler;
 }
 
