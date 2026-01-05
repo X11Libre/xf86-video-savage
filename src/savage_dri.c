@@ -116,7 +116,7 @@ static void SAVAGEWakeupHandler(ScreenPtr pScreen, int result)
    /* FK: this flag doesn't seem to be used. */
 }
 
-static void SAVAGEBlockHandler(ScreenPtr pScreen, pointer pTimeout)
+static void SAVAGEBlockHandler(ScreenPtr pScreen, void *pTimeout)
 {
    ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
    SavagePtr psav = SAVPTR(pScrn);
@@ -605,7 +605,7 @@ Bool SAVAGEDRIScreenInit( ScreenPtr pScreen )
    pDRIInfo->ddxDriverMinorVersion = SAVAGE_VERSION_MINOR;
    pDRIInfo->ddxDriverPatchVersion = SAVAGE_PATCHLEVEL;
 
-   pDRIInfo->frameBufferPhysicalAddress = (pointer)(uintptr_t) psav->FbRegion.base;
+   pDRIInfo->frameBufferPhysicalAddress = (uintptr_t) psav->FbRegion.base;
    pDRIInfo->frameBufferSize = psav->videoRambytes;
    pDRIInfo->frameBufferStride = pScrn->displayWidth*(pScrn->bitsPerPixel/8);
    pDRIInfo->ddxDrawableTableEntry = SAVAGE_MAX_DRAWABLES;

@@ -272,7 +272,7 @@ typedef union _BMPDESC {
 typedef struct _StatInfo {
     int     origMode;
     int     pageCnt;
-    pointer statBuf;
+    void   *statBuf;
     int     realSeg;
     int     realOff;
 } StatInfoRec,*StatInfoPtr;

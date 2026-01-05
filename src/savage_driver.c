@@ -310,7 +310,7 @@ _X_EXPORT XF86ModuleData savageModuleData = {
     NULL
 };
 
-static pointer SavageSetup(pointer module, pointer opts, int *errmaj,
+static void *SavageSetup(void *module, void *opts, int *errmaj,
 			   int *errmin)
 {
     static Bool setupDone = FALSE;
@@ -318,7 +318,7 @@ static pointer SavageSetup(pointer module, pointer opts, int *errmaj,
     if (!setupDone) {
 	setupDone = TRUE;
 	xf86AddDriver(&SAVAGE, module, 1);
-	return (pointer) 1;
+	return (void*) 1;
     } else {
 	if (errmaj)
 	    *errmaj = LDR_ONCEONLY;
@@ -682,7 +682,7 @@ static Bool SavagePciProbe(DriverPtr drv, int entity_num,
 static void SavageDoDDC(ScrnInfoPtr pScrn)
 {
     SavagePtr psav= SAVPTR(pScrn);
-    pointer ddc;
+    void *ddc;
 
     /* Do the DDC dance. */ /* S3/VIA's DDC code */
     ddc = xf86LoadSubModule(pScrn, "ddc");
