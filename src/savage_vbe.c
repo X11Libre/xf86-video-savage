@@ -274,7 +274,7 @@ SavageGetBIOSModes(
 {
     unsigned short iModeCount = 0;
     unsigned short int *mode_list;
-    pointer vbeLinear = NULL;
+    void *vbeLinear = NULL;
     int vbeReal;
     struct vbe_mode_info_block * vmib;
 

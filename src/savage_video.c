@@ -50,14 +50,14 @@ void savageOUTREG( SavagePtr psav, unsigned long offset, unsigned long value );
 
 static XF86VideoAdaptorPtr SavageSetupImageVideo(ScreenPtr);
 static void SavageInitOffscreenImages(ScreenPtr);
-static void SavageStopVideo(ScrnInfoPtr, pointer, Bool);
-static int SavageSetPortAttribute(ScrnInfoPtr, Atom, INT32, pointer);
-static int SavageGetPortAttribute(ScrnInfoPtr, Atom ,INT32 *, pointer);
+static void SavageStopVideo(ScrnInfoPtr, void*, Bool);
+static int SavageSetPortAttribute(ScrnInfoPtr, Atom, INT32, void*);
+static int SavageGetPortAttribute(ScrnInfoPtr, Atom ,INT32 *, void*);
 static void SavageQueryBestSize(ScrnInfoPtr, Bool,
-	short, short, short, short, unsigned int *, unsigned int *, pointer);
+	short, short, short, short, unsigned int *, unsigned int *, void*);
 static int SavagePutImage( ScrnInfoPtr,
 	short, short, short, short, short, short, short, short,
-	int, unsigned char*, short, short, Bool, RegionPtr, pointer,
+	int, unsigned char*, short, short, Bool, RegionPtr, void*,
 	DrawablePtr);
 static int SavageQueryImageAttributes(ScrnInfoPtr,
 	int, unsigned short *, unsigned short *,  int *, int *);
@@ -109,8 +109,6 @@ static void (*SavageDisplayVideo)(
     short src_w, short src_h,
     short drw_w, short drw_h
 ) = NULL;
-
-/*static void SavageBlockHandler(int, pointer, pointer, pointer);*/
 
 #define XVTRACE	4
 
@@ -817,7 +815,7 @@ SavageSetupImageVideo(ScreenPtr pScreen)
     adapt->nPorts 		= 1;
     adapt->pPortPrivates = (DevUnion*)(&adapt[1]);
     pPriv = (SavagePortPrivPtr)(&adapt->pPortPrivates[1]);
-    adapt->pPortPrivates[0].ptr	= (pointer)(pPriv);
+    adapt->pPortPrivates[0].ptr	= pPriv;
     adapt->pAttributes		= Attributes;
     adapt->nImages		= NUM_IMAGES;
     adapt->nAttributes		= NUM_ATTRIBUTES;
@@ -938,7 +936,7 @@ SavageClipVideo(
 }
 
 static void
-SavageStopVideo(ScrnInfoPtr pScrn, pointer data, Bool shutdown)
+SavageStopVideo(ScrnInfoPtr pScrn, void *data, Bool shutdown)
 {
     SavagePortPrivPtr pPriv = (SavagePortPrivPtr)data;
 #ifdef SAVAGEDRI
@@ -989,7 +987,7 @@ SavageSetPortAttribute(
     ScrnInfoPtr pScrn,
     Atom attribute,
     INT32 value,
-    pointer data
+    void *data
 ){
     SavagePortPrivPtr pPriv = (SavagePortPrivPtr)data;
     SavagePtr psav = SAVPTR(pScrn);
@@ -1047,7 +1045,7 @@ SavageGetPortAttribute(
   ScrnInfoPtr pScrn,
   Atom attribute,
   INT32 *value,
-  pointer data
+  void *data
 ){
     SavagePortPrivPtr pPriv = (SavagePortPrivPtr)data;
 
@@ -1081,7 +1079,7 @@ SavageQueryBestSize(
   short vid_w, short vid_h,
   short drw_w, short drw_h,
   unsigned int *p_w, unsigned int *p_h,
-  pointer data
+  void *data
 ){
     /* What are the real limits for the Savage? */
 
@@ -1691,7 +1689,7 @@ SavagePutImage(
     int id, unsigned char* buf,
     short width, short height,
     Bool sync,
-    RegionPtr clipBoxes, pointer data,
+    RegionPtr clipBoxes, void *data,
     DrawablePtr pDraw
 ){
     SavagePortPrivPtr pPriv = (SavagePortPrivPtr)data;
@@ -2022,7 +2020,7 @@ SavageAllocateSurface(
     surface->id = id;
     surface->pitches[0] = pitch;
     surface->offsets[0] = offset; /*area->box.y1 * fbpitch;*/
-    surface->devPrivate.ptr = (pointer)pPriv;
+    surface->devPrivate.ptr = pPriv;
 
     return Success;
 }
@@ -2066,7 +2064,7 @@ SavageGetSurfaceAttribute(
     INT32 *value
 ){
     return SavageGetPortAttribute(pScrn, attribute, value,
-			(pointer)(GET_PORT_PRIVATE(pScrn)));
+			(GET_PORT_PRIVATE(pScrn)));
 }
 
 static int
@@ -2076,7 +2074,7 @@ SavageSetSurfaceAttribute(
     INT32 value
 ){
     return SavageSetPortAttribute(pScrn, attribute, value,
-			(pointer)(GET_PORT_PRIVATE(pScrn)));
+			(GET_PORT_PRIVATE(pScrn)));
 }
 
 static int
