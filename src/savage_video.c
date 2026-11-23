@@ -75,8 +75,6 @@ static void SavageSetColorNew(ScrnInfoPtr pScrn );
 static void SavageSetColor2000(ScrnInfoPtr pScrn );
 static void (*SavageSetColor)(ScrnInfoPtr pScrn ) = NULL;
 
-static void (*SavageInitStreams)(ScrnInfoPtr pScrn) = NULL;
-
 static void SavageDisplayVideoOld(
     ScrnInfoPtr pScrn, int id, int offset,
     short width, short height, int pitch,
@@ -315,7 +313,6 @@ void SavageInitVideo(ScreenPtr pScreen)
 	newAdaptor = SavageSetupImageVideo(pScreen);
 	SavageInitOffscreenImages(pScreen);
 
-	SavageInitStreams = SavageInitStreamsNew;
 	SavageSetColor = SavageSetColorNew;
 	SavageSetColorKey = SavageSetColorKeyNew;
 	SavageDisplayVideo = SavageDisplayVideoNew;
@@ -325,7 +322,6 @@ void SavageInitVideo(ScreenPtr pScreen)
         newAdaptor = SavageSetupImageVideo(pScreen);
         SavageInitOffscreenImages(pScreen);
 
-	SavageInitStreams = SavageInitStreams2000;
         SavageSetColor = SavageSetColor2000;
         SavageSetColorKey = SavageSetColorKey2000;
         SavageDisplayVideo = SavageDisplayVideo2000;
@@ -335,7 +331,6 @@ void SavageInitVideo(ScreenPtr pScreen)
 	newAdaptor = SavageSetupImageVideo(pScreen);
 	SavageInitOffscreenImages(pScreen);
 
-	SavageInitStreams = SavageInitStreamsOld;
 	SavageSetColor = SavageSetColorOld;
 	SavageSetColorKey = SavageSetColorKeyOld;
 	SavageDisplayVideo = SavageDisplayVideoOld;
