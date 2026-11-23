@@ -1114,7 +1114,7 @@ SavageCopyPlanarDataBCI(
     unsigned long offsetV = offsetY +  srcPitch * h;
     unsigned long offsetU = offsetV +  srcPitch2 * (h>>1);
     unsigned long dstOffset  = (unsigned long)dst - (unsigned long)psav->FBBase;
-    unsigned char memType;
+    unsigned char bciMemType;
 
     BCI_GET_PTR;
 
@@ -1129,7 +1129,7 @@ SavageCopyPlanarDataBCI(
     planarPtr = planarPtr + srcPitch2 * (h>>1);
     memcpy(planarPtr, srcU, srcPitch2 * (h>>1));
 
-    memType = isAGP ? 3 : 0;
+    bciMemType = isAGP ? 3 : 0;
 
     /*
      * Transfer pixel data from one memory location to another location
@@ -1150,12 +1150,12 @@ SavageCopyPlanarDataBCI(
     w = (w+0xf)&0xff0;
     psav->WaitQueue(psav,11);
     BCI_SEND(BCI_SET_REGISTER | BCI_SET_REGISTER_COUNT(7) | 0x51);
-    BCI_SEND(offsetY | memType);
+    BCI_SEND(offsetY | bciMemType);
     BCI_SEND(dstOffset);
     BCI_SEND(((h-1)<<16)|((w-1)>>3));
     BCI_SEND(dstPitch >> 3);
-    BCI_SEND(offsetU | memType);
-    BCI_SEND(offsetV | memType);
+    BCI_SEND(offsetU | bciMemType);
+    BCI_SEND(offsetV | bciMemType);
     BCI_SEND((srcPitch2 << 16)| srcPitch2);
 
     BCI_SEND(BCI_SET_REGISTER | BCI_SET_REGISTER_COUNT(1) | 0x50);
