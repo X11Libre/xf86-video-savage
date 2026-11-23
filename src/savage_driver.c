@@ -310,6 +310,10 @@ _X_EXPORT XF86ModuleData savageModuleData = {
     NULL
 };
 
+#ifdef XF86_MODULE_VERSION_SUFFIX
+XF86_MODULE_VERSION_SUFFIX(savage, SAVAGE_VERSION_SUFFIX);
+#endif
+
 static void *SavageSetup(void *module, void *opts, int *errmaj,
 			   int *errmin)
 {
