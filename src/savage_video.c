@@ -138,12 +138,12 @@ static XF86VideoFormatRec Formats[NUM_FORMATS] =
 
 static XF86AttributeRec Attributes[NUM_ATTRIBUTES] =
 {
-   {XvSettable | XvGettable, 0, (1 << 24) - 1, "XV_COLORKEY"},
-   {XvSettable | XvGettable, -128, 127, "XV_BRIGHTNESS"},
-   {XvSettable | XvGettable, 0, 255, "XV_CONTRAST"},
-   {XvSettable | XvGettable, 0, 255, "XV_SATURATION"},
-   {XvSettable | XvGettable, -180, 180, "XV_HUE"},
-   {XvSettable | XvGettable, 0, 1, "XV_VERTICAL_INTERPOLATION"}
+   {XvSettable | XvGettable, 0, (1 << 24) - 1, (char *) "XV_COLORKEY"},
+   {XvSettable | XvGettable, -128, 127, (char *) "XV_BRIGHTNESS"},
+   {XvSettable | XvGettable, 0, 255, (char *) "XV_CONTRAST"},
+   {XvSettable | XvGettable, 0, 255, (char *) "XV_SATURATION"},
+   {XvSettable | XvGettable, -180, 180, (char *) "XV_HUE"},
+   {XvSettable | XvGettable, 0, 1, (char *) "XV_VERTICAL_INTERPOLATION"}
 };
 
 #define FOURCC_RV16	0x36315652
