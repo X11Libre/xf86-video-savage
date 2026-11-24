@@ -198,6 +198,10 @@ typedef struct
 			 (SAVAGE_VERSION_MINOR << 16) | \
 			 SAVAGE_PATCHLEVEL)
 
+#ifndef MAX
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#endif
+
 typedef struct _S3VMODEENTRY {
    unsigned short Width;
    unsigned short Height;
